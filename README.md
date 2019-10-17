@@ -1,4 +1,4 @@
-# ingics-message-parser-python
+# ingics-message-parser-py27
 
 Message parser for Ingics BLE beacon and gateway.
 
@@ -31,8 +31,6 @@ Type "help", "copyright", "credits" or "license" for more information.
 ...     print '#{0}: #{1}'.format(index, data)
 ... 
 >>> MessageParser.parse('$GPRP,A8F9F2190E7A,A99213AA86EF,-77,02010612FF0D0083BCD60000FFFFFFFFFFFF15000000', cb)
-000D
-BC83
 #0: #{'payload': '02010612FF0D0083BCD60000FFFFFFFFFFFF15000000', 'beacon': 'A8F9F2190E7A', 'parsedPayload': {'mfgCode': 13, 'temperature': -1, 'mfg': 'Ingics', 'battery': 214, 'raw': '0D0083BCD60000FFFFFFFFFFFF15000000', 'user': 65535, 'type': 'iBS03T', 'events': {'button': 0}}, 'rssi': -77, 'type': 'GPRP', 'gateway': 'A99213AA86EF'}
 ```
 
