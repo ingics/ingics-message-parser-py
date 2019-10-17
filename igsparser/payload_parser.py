@@ -165,8 +165,8 @@ class PayloadParser:
     def parseMsd(msdBytes):
         mfg = struct.unpack('<H', bytes(msdBytes[0:2]))[0]
         type = struct.unpack('<H', bytes(msdBytes[2:4]))[0]
-        print(format(mfg, '04X'))
-        print(format(type, '04X'))
+        # print(format(mfg, '04X'))
+        # print(format(type, '04X'))
         if mfg == 0x59 and type == 0xBC80:
             # iBS01(H/G/T)
             return PayloadParser.parseIBS01(msdBytes, mfg)
