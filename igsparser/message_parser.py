@@ -1,6 +1,6 @@
 import re
 import json
-from payload_parser import PayloadParser
+from .payload_parser import PayloadParser
 
 class MessageParser:
 
@@ -17,7 +17,7 @@ class MessageParser:
             }
             try:
                 data['parsedPayload'] = PayloadParser.parse(data['payload'])
-            except Exception, e:
+            except Exception as e:
                 data['parsedPayload'] = e.message
             return data
         return None
