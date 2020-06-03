@@ -1,5 +1,11 @@
+
 from .message_parser import MessageParser
-from .payload_parser import PayloadParser
+from .advertisement import Advertisement
+
+class PayloadParser:
+    @staticmethod
+    def parse(payload):
+        ad = Advertisement(payload)
+        return ad
 
 __all__ = [ 'MessageParser', 'PayloadParser' ]
-

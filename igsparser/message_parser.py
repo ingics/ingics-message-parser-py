@@ -1,40 +1,38 @@
 import re
+import sys
 import json
-from .payload_parser import PayloadParser
+from datetime import datetime
+from .advertisement import Advertisement
+
+class MessageData:
+    def __init__(self, msg):
+        match = re.match('^\\$(.+),([0-9a-fA-F]{12}),([0-9a-fA-F]{12}),(-?\\d+),([0-9a-fA-F]+)(,(.+))?', msg)
+        if match:
+            self.beacon = match.group(2)
+            self.gateway = match.group(3)
+            self.rssi = int(match.group(4))
+            self.fullMesage = msg
+            if sys.version_info[0] < 3 or sys.version_info[1] < 4:
+                import time
+                self.timestamp = time.time()
+            else:
+                from datetime import datetime
+                self.timestamp = datetime.now().timestamp()
+            if match.group(6) is not None:
+                self.timestamp = float(match.group(7))
+            self.advertisement = Advertisement(match.group(5))
+        else:
+            raise ValueError()
 
 class MessageParser:
 
     @staticmethod
-    def parseSingleMessage(msg):
-        match = re.match('^\\$(.+),([0-9a-fA-F]{12}),([0-9a-fA-F]{12}),(-?\\d+),([0-9a-fA-F]+)(,(.+))?', msg)
-        if match:
-            data = {
-                'type': match.group(1),
-                'beacon': match.group(2),
-                'gateway': match.group(3),
-                'rssi': int(match.group(4)),
-                'payload': match.group(5)
-            }
-            try:
-                data['parsedPayload'] = PayloadParser.parse(data['payload'])
-            except Exception as e:
-                data['parsedPayload'] = e.message
-            return data
-        return None
-
-    @staticmethod
     def parse(message, callback):
         try:
-            data = json.load(message).data
+            data = json.loads(message)['data']
         except:
             data = re.split('\\r?\\n', message)
         index = 0
         for msg in data:
-            callback(MessageParser.parseSingleMessage(msg), index)
+            callback(MessageData(msg), index)
             index += 1
-
-if __name__ == '__main__':
-    def cb(data, index):
-        print('#{0}: {1}'.format(index, data))
-    message = '$GPRP,A8F9F2190E7A,A99213AA86EF,-77,02010612FF0D0083BCD60000FFFFFFFFFFFF15000000'
-    MessageParser.parse(message, cb)
