@@ -7,7 +7,7 @@ class Msd:
 
     def __init__(self, raw):
         self.raw = raw
-        self.mfg = struct.unpack('B', bytes(self.raw[0:1]))[0]
+        self.mfg = struct.unpack('H', bytes(self.raw[0:2]))[0]
         self.company = self.companyIdentifiers(self.mfg)
         if self.mfg == 0x06:
             self.microsoft()
@@ -103,7 +103,10 @@ class Msd:
             0x19: { 'name': 'iBS04', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
             0x20: { 'name': 'iRS02', 'temp': True, 'humidity': False, 'events': [ 'hall' ] },
             0x21: { 'name': 'iRS02TP', 'temp': True, 'humidity': True, 'events': [ 'hall' ] },
-            0x22: { 'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': [ 'hall' ], 'accel': True }
+            0x22: { 'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': [ 'hall' ], 'accel': True },
+            0x30: { 'name': 'iBS05', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
+            0x35: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
+            0x36: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
         }
 
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
@@ -130,7 +133,7 @@ class Msd:
             for event in feature['events']:
                 bitNo = eventMapping.get(event)
                 if bitNo is not None:
-                    self.events[event] = eventFlag & (1 << bitNo)
+                    self.events[event] = (eventFlag & (1 << bitNo) != 0)
             if 'accel' in feature and feature['accel']:
                 self.accel = {
                     'x': struct.unpack('h', bytes(self.raw[7:9]))[0],
@@ -236,3 +239,6 @@ class Msd:
             elif self.mfg == 0x0D and code == 0xBC81:
                 # iBS03RG
                 self.ingics_rg()
+            elif self.mfg == 0x082C and code == 0xBC85:
+                # iBS05
+                self.ingics_ibs()
