@@ -1,4 +1,4 @@
-{
+appearanceList = {
     "0": "Unknown or unspecified appearance type.",
     "64": "Generic Phone.",
     "128": "Generic Computer.",
@@ -49,3 +49,4 @@
     "5187": "Outdoor Location Pod.",
     "5188": "Outdoor Location and Navigation Pod."
 }
+

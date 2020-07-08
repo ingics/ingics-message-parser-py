@@ -2,6 +2,7 @@ import uuid
 import json
 import struct
 import pprint
+from .appearance import appearanceList
 from .msd import Msd
 
 class Advertisement:
@@ -84,9 +85,7 @@ class Advertisement:
             # Appearance
             elif adType == 0x19:
                 val = str(struct.unpack('H', bytes(adData))[0])
-                with open('igsparser/appearance.json') as json_file:
-                    apperances = json.load(json_file)
-                    self.apperance = apperances[val] if val in apperances else val
+                self.apperance = apperanceList[val] if val in apperanceList else val
             # Service Data - 32-bit UUID
             elif adType == 0x20:
                 serviceUuid = adData[0:4]

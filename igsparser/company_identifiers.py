@@ -1,4 +1,4 @@
-{
+companyIdentifiers = {
     "0": {
         "idhex": "0x0000",
         "name": "Ericsson Technology Licensing"

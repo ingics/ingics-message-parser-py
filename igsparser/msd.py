@@ -2,6 +2,7 @@ import uuid
 import json
 import struct
 import pprint
+from .company_identifiers import companyIdentifiers
 
 class Msd:
 
@@ -22,10 +23,8 @@ class Msd:
 
     @staticmethod
     def companyIdentifiers(mfg):
-        with open('igsparser/company-identifiers.json') as json_file:
-            companys = json.load(json_file)
-            if str(mfg) in companys:
-                return companys[str(mfg)]['name']
+        if str(mfg) in companyIdentifiers:
+            return companyIdentifiers[str(mfg)]['name']
         return None
 
     @staticmethod
