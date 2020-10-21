@@ -2,7 +2,14 @@
 
 Message parser for Ingics BLE beacon and gateway.
 
+
 ## Uasge
+
+### Install
+
+```
+pip install -U git+https://github.com/ingics/ingics-message-parser-py
+```
 
 ### Unit Test
 ```
