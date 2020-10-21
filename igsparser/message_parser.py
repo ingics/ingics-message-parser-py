@@ -11,7 +11,7 @@ class MessageData:
             self.beacon = match.group(2)
             self.gateway = match.group(3)
             self.rssi = int(match.group(4))
-            self.fullMesage = msg
+            self.fullMessage = msg
             if sys.version_info[0] < 3 or sys.version_info[1] < 4:
                 import time
                 self.timestamp = time.time()

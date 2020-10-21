@@ -70,7 +70,7 @@ Type "help", "copyright", "credits" or "license" for more information.
  'serviceUuids': [],
  'txPowerLevel': None},
  'beacon': 'A8F9F2190E7A',
- 'fullMesage': '$GPRP,A8F9F2190E7A,A99213AA86EF,-77,02010612FF0D0083BCD60000FFFFFFFFFFFF15000000',
+ 'fullMessage': '$GPRP,A8F9F2190E7A,A99213AA86EF,-77,02010612FF0D0083BCD60000FFFFFFFFFFFF15000000',
  'gateway': 'A99213AA86EF',
  'rssi': -77,
  'timestamp': 1591154801.380887}
@@ -106,7 +106,7 @@ Type "help", "copyright", "credits" or "license" for more information.
  'serviceUuids': [],
  'txPowerLevel': None},
  'beacon': 'A8F9F2190E7A',
- 'fullMesage': '$GPRP,A8F9F2190E7A,A99213AA86EF,-77,02010612FF0D0083BCD60000FFFFFFFFFFFF15000000',
+ 'fullMessage': '$GPRP,A8F9F2190E7A,A99213AA86EF,-77,02010612FF0D0083BCD60000FFFFFFFFFFFF15000000',
  'gateway': 'A99213AA86EF',
  'rssi': -77,
  'timestamp': 1591162157.305131}
