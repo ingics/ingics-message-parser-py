@@ -85,7 +85,7 @@ class Advertisement:
             # Appearance
             elif adType == 0x19:
                 val = str(struct.unpack('H', bytes(adData))[0])
-                self.apperance = apperanceList[val] if val in apperanceList else val
+                self.apperance = appearanceList[val] if val in appearanceList else val
             # Service Data - 32-bit UUID
             elif adType == 0x20:
                 serviceUuid = adData[0:4]
