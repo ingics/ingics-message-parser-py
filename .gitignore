@@ -1,3 +1,6 @@
 .venv
 .vscode
 *.pyc
+dist
+build
+ingics_message_parser.egg-info
