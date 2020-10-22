@@ -9,7 +9,7 @@ def test_ibs01_button_pressed():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS01'
         assert msd.battery == 3.10
-        assert msd.events['button'] == True
+        assert msd.events.button == True
     MessageParser.parse(message, handler)
 
 def test_ibs01_hall_detected():
@@ -18,15 +18,15 @@ def test_ibs01_hall_detected():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS01'
         assert msd.battery == 2.99
-        assert msd.events['hall'] == True
+        assert msd.events.hall == True
     MessageParser.parse(message, handler)
 
 def test_ibs01_moving_and_fall():
     payload = '02010612FF590080BC2B010AFFFFFFFFFFFFFFFFFFFF'
     ad = PayloadParser.parse(payload)
     msd = ad.manufacturerData
-    assert msd.events['fall'] == True
-    assert msd.events['moving'] == True
+    assert msd.events.fall == True
+    assert msd.events.moving == True
 
 def test_ibs01_json_temperature():
     message = '{"data":["$GPRP,7ABA6F20ACCF,806172C89C09,-2,02010612FF590080BCFF00007A0D4300FFFFFFFFFFFF"]}'
@@ -48,7 +48,7 @@ def test_ibs01_multi_messages():
             assert msd.temperature == 34.50
         elif index == 1:
             assert msd.battery == 2.99
-            assert msd.events['hall'] == True
+            assert msd.events.hall == True
         else:
             assert 'invalid index'
     MessageParser.parse(json.dumps(messages), handler)

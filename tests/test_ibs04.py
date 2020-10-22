@@ -8,5 +8,5 @@ def test_ibs04():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS04'
         assert msd.battery == 3.14
-        assert msd.events['button'] == True
+        assert msd.events.button == True
     MessageParser.parse(message, handler)

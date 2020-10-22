@@ -5,6 +5,6 @@ def test_irs02rg():
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iRS02RG'
-        assert msd.accel['x'] == 0
-        assert msd.accel['z'] == -260
+        assert msd.accel.x == 0
+        assert msd.accel.z == -260
     MessageParser.parse(message, handler)

@@ -1,8 +1,35 @@
+
 import uuid
 import json
 import struct
 import pprint
 from .company_identifiers import companyIdentifiers
+
+class DictToObject(object):
+    def __init__(self, dictionary):
+        def _traverse(key, element):
+            if isinstance(element, dict):
+                return key, DictToObject(element)
+            else:
+                return key, element
+        try:
+            # python 2.X
+            objd = dict(_traverse(k, v) for k, v in dictionary.iteritems())
+            self.__dict__.update(objd)
+        except AttributeError:
+            # python 3.X
+            objd = dict(_traverse(k, v) for k, v in dictionary.items())
+            self.__dict__.update(objd)
+
+class MsdEvents(DictToObject):
+    def __init__(self, dictionary):
+        DictToObject.__init__(self, dictionary)
+
+class MsdAccelData(object):
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
 
 class Msd:
 
@@ -134,13 +161,14 @@ class Msd:
                 if bitNo is not None:
                     self.events[event] = (eventFlag & (1 << bitNo) != 0)
             if 'accel' in feature and feature['accel']:
-                self.accel = {
-                    'x': struct.unpack('h', bytes(self.raw[7:9]))[0],
-                    'y': struct.unpack('h', bytes(self.raw[9:11]))[0],
-                    'z': struct.unpack('h', bytes(self.raw[11:13]))[0]
-                }
+                self.accel = MsdAccelData(
+                    struct.unpack('h', bytes(self.raw[7:9]))[0],
+                    struct.unpack('h', bytes(self.raw[9:11]))[0],
+                    struct.unpack('h', bytes(self.raw[11:13]))[0]
+                )
         else:
             self.type = 'Unknown Tag'
+        self.events = MsdEvents(self.events)
 
     @staticmethod
     def ingics_rs_type(subtype):
@@ -158,10 +186,10 @@ class Msd:
         self.battery = struct.unpack('<H', bytes(self.raw[4:6]))[0] / 100
         self.user = struct.unpack('<H', bytes(self.raw[11:13]))[0]
         self.eventFlag = eventFlag
-        self.events = {
+        self.events = MsdEvents({
             'sensor': (eventFlag & 0x04) != 0x00,
             'boot': (eventFlag & 0x10) != 0x00
-        }
+        })
 
     def ingics_rg(self):
         self.company = 'Ingics'
@@ -172,26 +200,26 @@ class Msd:
         battActFlag = struct.unpack('<H', bytes(self.raw[4:6]))[0]
         self.battery = (battActFlag & 0x0FFF) / 100
         self.evenFlag = (battActFlag & 0xF000) >> 12
-        self.events = {
+        self.events = MsdEvents({
             'button': (battActFlag & 0x2000) != 0,
             'moving': (battActFlag & 0x1000) != 0
-        }
+        })
         self.accels = [
-            {
-                'x': struct.unpack('<h', bytes(self.raw[6:8]))[0],
-                'y': struct.unpack('<h', bytes(self.raw[8:10]))[0],
-                'z': struct.unpack('<h', bytes(self.raw[10:12]))[0]
-            },
-            {
-                'x': struct.unpack('<h', bytes(self.raw[12:14]))[0],
-                'y': struct.unpack('<h', bytes(self.raw[14:16]))[0],
-                'z': struct.unpack('<h', bytes(self.raw[16:18]))[0]
-            },
-            {
-                'x': struct.unpack('<h', bytes(self.raw[18:20]))[0],
-                'y': struct.unpack('<h', bytes(self.raw[20:22]))[0],
-                'z': struct.unpack('<h', bytes(self.raw[22:24]))[0]
-            }
+            MsdAccelData(
+                struct.unpack('<h', bytes(self.raw[6:8]))[0],
+                struct.unpack('<h', bytes(self.raw[8:10]))[0],
+                struct.unpack('<h', bytes(self.raw[10:12]))[0]
+            ),
+            MsdAccelData(
+                struct.unpack('<h', bytes(self.raw[12:14]))[0],
+                struct.unpack('<h', bytes(self.raw[14:16]))[0],
+                struct.unpack('<h', bytes(self.raw[16:18]))[0]
+            ),
+            MsdAccelData(
+                struct.unpack('<h', bytes(self.raw[18:20]))[0],
+                struct.unpack('<h', bytes(self.raw[20:22]))[0],
+                struct.unpack('<h', bytes(self.raw[22:24]))[0]
+            )
         ]
 
     def ingics_ibs01(self):
@@ -217,6 +245,7 @@ class Msd:
                     'hall': (eventFlag & (1 << self.bitHall) != 0),
                     'fall': (eventFlag & (1 << self.bitFall) != 0)
                 }
+            self.events = MsdEvents(self.events)
         else:
             self.ingics_ibs()
 

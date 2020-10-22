@@ -6,8 +6,8 @@ def test_ibs03t():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03T'
         assert msd.temperature == 23.14
+        assert msd.events.button == False
         assert not hasattr(msd, 'humidity')
-        assert not hasattr(msd.events, 'button')
     MessageParser.parse(message, handler)
 
 def test_ibs03t_new():
@@ -25,10 +25,10 @@ def test_ibs03rg():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03RG'
         assert msd.battery == 3.18
-        assert msd.events['moving'] == True
-        assert msd.accels[0]['x'] == 10
-        assert msd.accels[1]['y'] == -10
-        assert msd.accels[2]['z'] == -248
+        assert msd.events.moving == True
+        assert msd.accels[0].x == 10
+        assert msd.accels[1].y == -10
+        assert msd.accels[2].z == -248
     MessageParser.parse(message, handler)
 
 def test_ibs03tp():

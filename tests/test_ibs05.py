@@ -5,7 +5,7 @@ def test_ibs05():
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS05'
-        assert msd.events['button'] == True
+        assert msd.events.button == True
     MessageParser.parse(message, handler)
 
 def test_ibs05t():
@@ -22,5 +22,5 @@ def test_ibs05g():
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS05G'
-        assert msd.events['moving'] == True
+        assert msd.events.moving == True
     MessageParser.parse(message, handler)
