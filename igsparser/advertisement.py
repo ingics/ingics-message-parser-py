@@ -26,6 +26,9 @@ class Advertisement:
         length = len(self.raw)
         while i < length:
             adLength = self.raw[i]
+            # handling some beacon append '00..' in the end of payload
+            if adLength == 0:
+                break
             adType = self.raw[i + 1]
             adData = self.raw[i + 2 : i + adLength + 1]
             # Flags
