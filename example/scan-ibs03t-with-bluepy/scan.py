@@ -1,6 +1,6 @@
 from bluepy.btle import Scanner, DefaultDelegate
 import binascii
-from igsparser import PayloadParser
+from igsparser import MsdParser
 import pprint
 
 # MACs of IBSXX devices
@@ -15,9 +15,15 @@ class ScanDelegate(DefaultDelegate):
 
     def handleDiscovery(self, dev, isNewDev, isNewData):
         if dev.addr.upper() in ibs:
-            payload = binascii.b2a_hex(dev.rawData).decode('ascii')
-            data = PayloadParser.parse(payload).manufacturerData
-            pprint.pprint(vars(data))
+            value = dev.getValueText(255)
+            if value:
+                if type(value) is not str:
+                    # for python2, convert unicode to str
+                    value = value.encode('ascii', 'ignore')
+                data = MsdParser.parse(value)
+                pprint.pprint(vars(data))
 
 scanner = Scanner().withDelegate(ScanDelegate())
-devices = scanner.scan(100.0, passive=True)
+scanner.start()
+while True:
+    scanner.process()
