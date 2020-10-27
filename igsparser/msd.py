@@ -24,12 +24,20 @@ class DictToObject(object):
 class MsdEvents(DictToObject):
     def __init__(self, dictionary):
         DictToObject.__init__(self, dictionary)
+    def __str__(self):
+        return json.dumps(self.__dict__).replace('"', '\'')
+    def __repr__(self):
+        return json.dumps(self.__dict__).replace('"', '\'')
 
 class MsdAccelData(object):
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
+    def __str__(self):
+        return json.dumps(self.__dict__).replace('"', '\'')
+    def __repr__(self):
+        return json.dumps(self.__dict__).replace('"', '\'')
 
 class Msd:
 
