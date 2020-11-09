@@ -18,6 +18,6 @@ class MsdParser:
 class PayloadParser:
     @staticmethod
     def parse(payload):
-        return Advertisement(bytes(payload))
+        return Advertisement(payload)
 
 __all__ = [ 'MessageParser', 'PayloadParser', 'MsdParser' ]
