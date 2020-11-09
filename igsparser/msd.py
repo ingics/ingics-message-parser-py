@@ -108,9 +108,38 @@ class Msd:
     bitFall = 3
     bitPIR = 4
     bitIR = 5
-    bitMatt = 6
+    bitDin = 6
 
-    def ingics_ibs(self):
+    ibs01Features = {
+        0x03: { 'name': 'iBS01', 'temp': False, 'humidity': False, 'events': [] },
+        0x04: { 'name': 'iBS01H', 'temp': False, 'humidity': False, 'events': [ 'hall' ] },
+        0x05: { 'name': 'iBS01T', 'temp': True, 'humidity': True, 'events': [] },
+        0x06: { 'name': 'iBS01G', 'temp': False, 'humidity': False, 'events': [ 'moving', 'fall' ] },
+        0x07: { 'name': 'iBS01T', 'temp': True, 'humidity': False, 'events': [] }
+    }
+
+    ibsFeatures = {
+        0x01: { 'name': 'iBS02PIR2', 'temp': False, 'humidity': False, 'events': [ 'pir' ] },
+        0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': False, 'events': [ 'ir' ] },
+        0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': False, 'events': [ 'din'] },
+        0x10: { 'name': 'iBS03', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
+        0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': False, 'events': [ ], 'tof': True },
+        0x14: { 'name': 'iBS03T', 'temp': True, 'humidity': True, 'events': [ 'button' ] },
+        0x15: { 'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
+        0x16: { 'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
+        0x17: { 'name': 'iBS03TP', 'temp': True, 'humidity': False, 'events': [], 'tempExt': True },
+        0x18: { 'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
+        0x19: { 'name': 'iBS04', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
+        0x20: { 'name': 'iRS02', 'temp': True, 'humidity': False, 'events': [ 'hall' ] },
+        0x21: { 'name': 'iRS02TP', 'temp': True, 'humidity': False, 'events': [ 'hall' ], 'tempExt': True },
+        0x22: { 'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': [ 'hall' ], 'accel': True },
+        0x30: { 'name': 'iBS05', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
+        0x35: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
+        0x36: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
+    }
+
+    def ingics_ibs(self, features):
+
         eventMapping = {
             'button': self.bitButton,
             'moving': self.bitMoving,
@@ -118,29 +147,7 @@ class Msd:
             'fall': self.bitFall,
             'pir': self.bitPIR,
             'ir': self.bitIR,
-            'matt': self.bitMoving
-        }
-        featureMapping = {
-            0x01: { 'name': 'iBS02PIR', 'temp': False, 'humidity': False, 'events': [ 'pir' ] },
-            0x02: { 'name': 'iBS02IR', 'temp': False, 'humidity': False, 'events': [ 'ir' ] },
-            0x03: { 'name': 'iBS01', 'temp': False, 'humidity': False, 'events': [] },
-            0x04: { 'name': 'iBS01H', 'temp': False, 'humidity': False, 'events': [ 'hall' ] },
-            0x05: { 'name': 'iBS01T', 'temp': True, 'humidity': True, 'events': [] },
-            0x06: { 'name': 'iBS01G', 'temp': False, 'humidity': False, 'events': [ 'moving', 'fall' ] },
-            0x07: { 'name': 'iBS01T', 'temp': True, 'humidity': False, 'events': [] },
-            0x10: { 'name': 'iBS03', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
-            0x14: { 'name': 'iBS03T', 'temp': True, 'humidity': True, 'events': [ 'button' ] },
-            0x15: { 'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
-            0x16: { 'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
-            0x17: { 'name': 'iBS03TP', 'temp': True, 'humidity': True, 'events': [] },
-            0x18: { 'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
-            0x19: { 'name': 'iBS04', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
-            0x20: { 'name': 'iRS02', 'temp': True, 'humidity': False, 'events': [ 'hall' ] },
-            0x21: { 'name': 'iRS02TP', 'temp': True, 'humidity': True, 'events': [ 'hall' ] },
-            0x22: { 'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': [ 'hall' ], 'accel': True },
-            0x30: { 'name': 'iBS05', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
-            0x35: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
-            0x36: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
+            'din': self.bitDin
         }
 
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
@@ -153,17 +160,17 @@ class Msd:
         self.events = {}
         self.eventFlag = eventFlag
 
-        feature = featureMapping.get(subtype)
+        feature = features.get(subtype)
         if feature is not None:
             self.type = feature['name']
-            if feature['temp']:
+            if feature.get('temp', False):
                 self.temperature = struct.unpack('<h', bytes(self.raw[7:9]))[0] / 100
-            if feature['humidity']:
-                # a special handling for iBS03TP
-                if subtype == 0x17 or subtype == 0x21:
-                    self.temperatureExt = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
-                else:
-                    self.humidity = struct.unpack('<h', bytes(self.raw[9:11]))[0]
+            if feature.get('humidity', False):
+                self.humidity = struct.unpack('<h', bytes(self.raw[9:11]))[0]
+            if feature.get('tempExt', False):
+                self.temperatureExt = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
+            if feature.get('tof', False):
+                self.range = struct.unpack('<h', bytes(self.raw[9:11]))[0]
             for event in feature['events']:
                 bitNo = eventMapping.get(event)
                 if bitNo is not None:
@@ -255,7 +262,7 @@ class Msd:
                 }
             self.events = MsdEvents(self.events)
         else:
-            self.ingics_ibs()
+            self.ingics_ibs(self.ibs01Features)
 
     def ingics(self):
         if len(self.raw) >= 4:
@@ -263,18 +270,15 @@ class Msd:
             if self.mfg == 0x59 and code == 0xBC80:
                 # iBS01(H/G/T)
                 self.ingics_ibs01()
-            elif self.mfg == 0x59 and code == 0xBC81:
+            elif code == 0xBC81:
                 # iBS01RG
                 self.ingics_rg()
-            elif self.mfg == 0x0D and code == 0xBC83:
-                # iBS02/iBS03/iBS04
-                self.ingics_ibs()
-            elif self.mfg == 0x0D and code == 0xBC82:
+            elif code == 0xBC82:
                 # iBS02 for RS
                 self.ingics_rs()
-            elif self.mfg == 0x0D and code == 0xBC81:
-                # iBS03RG
-                self.ingics_rg()
+            elif self.mfg == 0x0D and code == 0xBC83:
+                # iBS02/iBS03/iBS04
+                self.ingics_ibs(self.ibsFeatures)
             elif self.mfg == 0x082C and code == 0xBC85:
                 # iBS05
-                self.ingics_ibs()
+                self.ingics_ibs(self.ibsFeatures)
