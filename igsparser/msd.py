@@ -152,6 +152,7 @@ class Msd:
 
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
+        extraFlag = struct.unpack('B', bytes(self.raw[14:15]))[0]
 
         self.company = 'Ingics'
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
@@ -183,6 +184,8 @@ class Msd:
                 )
         else:
             self.type = 'Unknown Tag'
+
+        self.events['boot'] = ((extraFlag & 0x10) != 0)
         self.events = MsdEvents(self.events)
 
     @staticmethod
@@ -195,6 +198,7 @@ class Msd:
     def ingics_rs(self):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
+        extraFlag = struct.unpack('B', bytes(self.raw[14:15]))[0]
         self.company = 'Ingics'
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
         self.type = self.ingics_rs_type(subtype)
@@ -203,7 +207,7 @@ class Msd:
         self.eventFlag = eventFlag
         self.events = MsdEvents({
             'sensor': (eventFlag & 0x04) != 0x00,
-            'boot': (eventFlag & 0x10) != 0x00
+            'boot': (extraFlag & 0x10) != 0x00
         })
 
     def ingics_rg(self):

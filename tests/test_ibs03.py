@@ -1,4 +1,4 @@
-from igsparser import MessageParser
+from igsparser import MessageParser, PayloadParser
 
 def test_ibs03t():
     message = '$GPRP,0C61CFC14A4E,E3C33FF55AEC,-50,02010612FF0D0083BC2801020A09FFFF000015030000'
@@ -9,6 +9,14 @@ def test_ibs03t():
         assert msd.events.button == False
         assert not hasattr(msd, 'humidity')
     MessageParser.parse(message, handler)
+
+def test_ibs03g():
+    payload = '02010612FF0D0083BC3E0102AAAAFFFF000016130000'
+    adv = PayloadParser.parse(payload)
+    msd = adv.manufacturerData
+    assert msd.type == 'iBS03G'
+    assert msd.events.moving == True
+    assert msd.events.boot == True
 
 def test_ibs03t_rh():
     message = '$GPRP,CDCB34E2D0A2,77AE1C1DC33D,-91,02010612FF0D0083BCAD0000A20B4700FFFF14000000'
