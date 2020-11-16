@@ -3,4 +3,5 @@
 *.pyc
 dist
 build
+bin/igsparser
 ingics_message_parser.egg-info
