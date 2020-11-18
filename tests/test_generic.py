@@ -1,4 +1,4 @@
-from igsparser import PayloadParser
+from igsparser import PayloadParser, MessageParser
 
 def test_localname():
     payload = '0B09506978656C203420584C'
@@ -37,3 +37,40 @@ def test_appearance():
     payload = '031980000201060E094E6F726469635F426C696E6B79'
     ad = PayloadParser.parse(payload)
     assert ad.apperance == 'Generic Computer.'
+
+def test_multi_messages():
+    messages = [
+        '$GPRP,7ABA6F20ACCF,806172C89C09,-2,02010612FF590080BCFF00007A0D4300FFFFFFFFFFFF',
+        '$GPRP,F704B6D48BE8,1173AE7325A2,-24,02010612FF590080BC2B0104FFFFFFFFFFFFFFFFFFFF'
+    ]
+    data = MessageParser.parse('\n'.join(messages), None)
+    index = 0
+    while index < len(data):
+        msd = data[index].advertisement.manufacturerData
+        if index == 0:
+            assert msd.humidity == 67
+            assert msd.temperature == 34.50
+        elif index == 1:
+            assert msd.battery == 2.99
+            assert msd.events.hall == True
+        else:
+            assert 'invalid index'
+        index += 1
+
+def test_multi_messages_cb():
+    messages = [
+        '$GPRP,7ABA6F20ACCF,806172C89C09,-2,02010612FF590080BCFF00007A0D4300FFFFFFFFFFFF',
+        '$GPRP,F704B6D48BE8,1173AE7325A2,-24,02010612FF590080BC2B0104FFFFFFFFFFFFFFFFFFFF'
+    ]
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        if index == 0:
+            assert msd.humidity == 67
+            assert msd.temperature == 34.50
+        elif index == 1:
+            assert msd.battery == 2.99
+            assert msd.events.hall == True
+        else:
+            assert 'invalid index'
+    MessageParser.parse('\n'.join(messages), handler)
+

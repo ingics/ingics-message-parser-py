@@ -27,12 +27,16 @@ class MessageData:
 class MessageParser:
 
     @staticmethod
-    def parse(message, callback):
+    def parse(message, callback = None):
         try:
             data = json.loads(message)['data']
         except:
             data = re.split('\\r?\\n', message)
-        index = 0
+        results = []
         for msg in data:
-            callback(MessageData(msg), index)
-            index += 1
+            log = MessageData(msg)
+            if callable(callback):
+                callback(log, len(results))
+            results.append(log)
+        return results if not callable(callback) else None
+
