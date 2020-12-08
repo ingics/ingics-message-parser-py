@@ -74,3 +74,15 @@ def test_multi_messages_cb():
             assert 'invalid index'
     MessageParser.parse('\n'.join(messages), handler)
 
+def test_empty_payload():
+    message = '$GPRP,7ABA6F20ACCF,806172C89C09,-2,'
+    data = MessageParser.parse(message, None)
+    ad = data[0].advertisement
+    msd = ad.manufacturerData
+    assert msd == None
+    message = '$GPRP,7ABA6F20ACCF,806172C89C09,-2,,1575440728'
+    data = MessageParser.parse(message, None)
+    ad = data[0].advertisement
+    msd = ad.manufacturerData
+    assert msd == None
+    assert data[0].timestamp == 1575440728

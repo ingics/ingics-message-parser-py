@@ -6,7 +6,7 @@ from .advertisement import Advertisement
 
 class MessageData:
     def __init__(self, msg):
-        match = re.match('^\\$(.+),([0-9a-fA-F]{12}),([0-9a-fA-F]{12}),(-?\\d+),([0-9a-fA-F]+)(,(.+))?', msg)
+        match = re.match('^\\$(.+),([0-9a-fA-F]{12}),([0-9a-fA-F]{12}),(-?\\d+),([0-9a-fA-F]*)(,(.+))?', msg)
         if match:
             self.beacon = match.group(2)
             self.gateway = match.group(3)
