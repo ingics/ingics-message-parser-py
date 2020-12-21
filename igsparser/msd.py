@@ -123,7 +123,8 @@ class Msd:
         0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': False, 'events': [ 'ir' ] },
         0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': False, 'events': [ 'din'] },
         0x10: { 'name': 'iBS03', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
-        0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': False, 'events': [ ], 'tof': True },
+        0x12: { 'name': 'iBS03P', 'temp': False, 'humidity': False, 'events': [], 'tempExt': True },
+        0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': False, 'events': [], 'tof': True },
         0x14: { 'name': 'iBS03T', 'temp': True, 'humidity': True, 'events': [ 'button' ] },
         0x15: { 'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
         0x16: { 'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
@@ -169,7 +170,10 @@ class Msd:
             if feature.get('humidity', False):
                 self.humidity = struct.unpack('<h', bytes(self.raw[9:11]))[0]
             if feature.get('tempExt', False):
-                self.temperatureExt = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
+                if feature.get('temp', False):
+                    self.temperatureExt = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
+                else:
+                    self.temperature = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
             if feature.get('tof', False):
                 self.range = struct.unpack('<h', bytes(self.raw[9:11]))[0]
             for event in feature['events']:
