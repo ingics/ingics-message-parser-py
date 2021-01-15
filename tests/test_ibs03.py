@@ -64,6 +64,6 @@ def test_ibs03p():
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03P'
-        assert msd.temperature == 20.02
+        assert msd.temperatureExt == 20.02
         assert not hasattr(msd, 'humidity')
     MessageParser.parse(message, handler)

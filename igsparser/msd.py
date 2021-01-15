@@ -123,7 +123,7 @@ class Msd:
         0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': False, 'events': [ 'ir' ] },
         0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': False, 'events': [ 'din'] },
         0x10: { 'name': 'iBS03', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
-        0x12: { 'name': 'iBS03P', 'temp': False, 'humidity': False, 'events': [], 'tempExt': True },
+        0x12: { 'name': 'iBS03P', 'temp': True, 'humidity': False, 'events': [], 'tempExt': True },
         0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': False, 'events': [], 'tof': True },
         0x14: { 'name': 'iBS03T', 'temp': True, 'humidity': True, 'events': [ 'button' ] },
         0x15: { 'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
