@@ -218,8 +218,9 @@ class Msd:
         self.company = 'Ingics'
         # 5900 81BC -> iBS01RG
         # 0D00 81BC -> iBS03RG
+        # 0D00 85BC -> iBS03GP
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
-        self.type = 'iBS01RG' if self.mfg == 0x59 else 'iBS03RG'
+        self.type = 'iBS01RG' if self.mfg == 0x59 else 'iBS03RG' if self.code == 0xBC81 else 'iBS03GP'
         battActFlag = struct.unpack('<H', bytes(self.raw[4:6]))[0]
         self.battery = (battActFlag & 0x0FFF) / 100
         self.evenFlag = (battActFlag & 0xF000) >> 12
@@ -244,6 +245,8 @@ class Msd:
                 struct.unpack('<h', bytes(self.raw[22:24]))[0]
             )
         ]
+        if self.type == 'iBS03GP':
+            self.gp = struct.unpack('<H', bytes(self.raw[24:26]))[0] / 50
 
     def ingics_ibs01(self):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
@@ -287,6 +290,9 @@ class Msd:
             elif self.mfg == 0x0D and code == 0xBC83:
                 # iBS02/iBS03/iBS04
                 self.ingics_ibs(self.ibsFeatures)
+            elif self.mfg == 0x0D and code == 0XBC85:
+                # iBS03GP
+                self.ingics_rg()
             elif self.mfg == 0x082C and code == 0xBC85:
                 # iBS05
                 self.ingics_ibs(self.ibsFeatures)

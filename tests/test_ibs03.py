@@ -67,3 +67,16 @@ def test_ibs03p():
         assert msd.temperatureExt == 20.02
         assert not hasattr(msd, 'humidity')
     MessageParser.parse(message, handler)
+
+def test_ibs03gp():
+    message = '$GPRP,806FB0C9963F,C3674946C293,-71,0201061BFF0D0085BC3111160082FF9EFE4E001200D2FE10003A005CFFD9C5'
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03GP'
+        assert msd.battery == 3.05
+        assert msd.events.moving == True
+        assert msd.accels[0].x == 22
+        assert msd.accels[1].y == 18
+        assert msd.accels[2].z == -164
+        assert msd.gp == 1012.98
+    MessageParser.parse(message, handler)
