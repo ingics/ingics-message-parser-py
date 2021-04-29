@@ -135,8 +135,9 @@ class Msd:
         0x21: { 'name': 'iRS02TP', 'temp': True, 'humidity': False, 'events': [ 'hall' ], 'tempExt': True },
         0x22: { 'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': [ 'hall' ], 'accel': True },
         0x30: { 'name': 'iBS05', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
-        0x35: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
-        0x36: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
+        0x31: { 'name': 'iBS05H', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
+        0x32: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
+        0x33: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving' ]},
     }
 
     def ingics_ibs(self, features):

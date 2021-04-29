@@ -9,7 +9,7 @@ def test_ibs05():
     MessageParser.parse(message, handler)
 
 def test_ibs05t():
-    message = '$GPRP,EAC653D3AA8D,CCB97E7361A4,-44,02010612FF2C0885BC4A0100A10AFFFF000035000000'
+    message = '$GPRP,EAC653D3AA8D,CCB97E7361A4,-44,02010612FF2C0885BC4A0100A10AFFFF000032000000'
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS05T'
@@ -18,7 +18,7 @@ def test_ibs05t():
     MessageParser.parse(message, handler)
 
 def test_ibs05g():
-    message = '$GPRP,EAC653D3AA8C,CCB97E7361A4,-44,02010612FF2C0885BC290102AAAAFFFF000036000000'
+    message = '$GPRP,EAC653D3AA8C,CCB97E7361A4,-44,02010612FF2C0885BC290102AAAAFFFF000033000000'
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS05G'
