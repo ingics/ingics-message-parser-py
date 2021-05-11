@@ -138,6 +138,7 @@ class Msd:
         0x31: { 'name': 'iBS05H', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
         0x32: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
         0x33: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving' ]},
+        0x40: { 'name': 'iBS06', 'temp': False, 'humidity': False, 'events': []}
     }
 
     def ingics_ibs(self, features):
@@ -294,6 +295,6 @@ class Msd:
             elif self.mfg == 0x0D and code == 0XBC85:
                 # iBS03GP
                 self.ingics_rg()
-            elif self.mfg == 0x082C and code == 0xBC85:
-                # iBS05
+            elif self.mfg == 0x082C and code == 0xBC83:
+                # iBS05/iBS06
                 self.ingics_ibs(self.ibsFeatures)
