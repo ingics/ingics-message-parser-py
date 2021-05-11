@@ -120,8 +120,8 @@ class Msd:
 
     ibsFeatures = {
         0x01: { 'name': 'iBS02PIR2', 'temp': False, 'humidity': False, 'events': [ 'pir' ] },
-        0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': False, 'events': [ 'ir' ] },
-        0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': False, 'events': [ 'din'] },
+        0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': False, 'events': [ 'ir' ], 'counter': True },
+        0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': False, 'events': [ 'din'], 'counter': True },
         0x10: { 'name': 'iBS03', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
         0x12: { 'name': 'iBS03P', 'temp': True, 'humidity': False, 'events': [], 'tempExt': True },
         0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': False, 'events': [], 'tof': True },
@@ -176,6 +176,9 @@ class Msd:
                     self.temperatureExt = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
                 else:
                     self.temperature = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
+            if feature.get('counter', False):
+                if self.raw[9] != 0xFF and self.raw[10] != 0xFF:
+                    self.counter = struct.unpack('<H', bytes(self.raw[9:11]))[0]
             if feature.get('tof', False):
                 self.range = struct.unpack('<h', bytes(self.raw[9:11]))[0]
             for event in feature['events']:
