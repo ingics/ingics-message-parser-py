@@ -24,3 +24,12 @@ def test_ibs05g():
         assert msd.type == 'iBS05G'
         assert msd.events.moving == True
     MessageParser.parse(message, handler)
+
+def test_ibs05co2():
+    message = '$GPRP,C8B629D6DAC3,F008D1789294,-35,02010612FF2C0883BC270100AAAA6804000034010000'
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS05CO2'
+        assert msd.co2 == 1128
+        assert not hasattr(msd, 'temperature')
+    MessageParser.parse(message, handler)

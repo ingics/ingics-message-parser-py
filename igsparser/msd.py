@@ -118,27 +118,36 @@ class Msd:
         0x07: { 'name': 'iBS01T', 'temp': True, 'humidity': False, 'events': [] }
     }
 
+    fieldDefs = {
+        'humi': { 'name': 'humidity', 'divisor': 1 },
+        'tof': { 'name': 'range', 'divisor': 1 },
+        'cnt': { 'name': 'counter', 'divisor': 1 },
+        'co2': { 'name': 'co2', 'divisor': 1 },
+        'tempExt': { 'name': 'temperatureExt', 'divisor': 100 },
+    }
+
     ibsFeatures = {
         0x01: { 'name': 'iBS02PIR2', 'temp': False, 'humidity': False, 'events': [ 'pir' ] },
-        0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': False, 'events': [ 'ir' ], 'counter': True },
-        0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': False, 'events': [ 'din'], 'counter': True },
+        0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': 'cnt', 'events': [ 'ir' ] },
+        0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': 'cnt', 'events': [ 'din'] },
         0x10: { 'name': 'iBS03', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
-        0x12: { 'name': 'iBS03P', 'temp': True, 'humidity': False, 'events': [], 'tempExt': True },
-        0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': False, 'events': [], 'tof': True },
-        0x14: { 'name': 'iBS03T', 'temp': True, 'humidity': True, 'events': [ 'button' ] },
+        0x12: { 'name': 'iBS03P', 'temp': True, 'humidity': 'tempExt', 'events': [] },
+        0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': 'tof', 'events': [] },
+        0x14: { 'name': 'iBS03T', 'temp': True, 'humidity': 'humi', 'events': [ 'button' ] },
         0x15: { 'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
-        0x16: { 'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ]},
-        0x17: { 'name': 'iBS03TP', 'temp': True, 'humidity': False, 'events': [], 'tempExt': True },
+        0x16: { 'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ] },
+        0x17: { 'name': 'iBS03TP', 'temp': True, 'humidity': 'tempExt', 'events': [] },
         0x18: { 'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
         0x19: { 'name': 'iBS04', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
         0x20: { 'name': 'iRS02', 'temp': True, 'humidity': False, 'events': [ 'hall' ] },
-        0x21: { 'name': 'iRS02TP', 'temp': True, 'humidity': False, 'events': [ 'hall' ], 'tempExt': True },
+        0x21: { 'name': 'iRS02TP', 'temp': True, 'humidity': 'tempExt', 'events': [ 'hall' ] },
         0x22: { 'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': [ 'hall' ], 'accel': True },
         0x30: { 'name': 'iBS05', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
         0x31: { 'name': 'iBS05H', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
         0x32: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
         0x33: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving' ]},
-        0x40: { 'name': 'iBS06', 'temp': False, 'humidity': False, 'events': []}
+        0x34: { 'name': 'iBS05CO2', 'temp': False, 'humidity': 'co2', 'events': [ 'button' ] },
+        0x40: { 'name': 'iBS06', 'temp': False, 'humidity': False, 'events': [] }
     }
 
     def ingics_ibs(self, features):
@@ -168,19 +177,13 @@ class Msd:
         if feature is not None:
             self.type = feature['name']
             if feature.get('temp', False):
-                self.temperature = struct.unpack('<h', bytes(self.raw[7:9]))[0] / 100
+                if self.raw[7] != 0xAA and self.raw[8] != 0xAA:
+                    self.temperature = struct.unpack('<h', bytes(self.raw[7:9]))[0] / 100
             if feature.get('humidity', False):
-                self.humidity = struct.unpack('<h', bytes(self.raw[9:11]))[0]
-            if feature.get('tempExt', False):
-                if feature.get('temp', False):
-                    self.temperatureExt = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
-                else:
-                    self.temperature = struct.unpack('<h', bytes(self.raw[9:11]))[0] / 100
-            if feature.get('counter', False):
+                field = self.fieldDefs.get(feature['humidity'])
                 if self.raw[9] != 0xFF and self.raw[10] != 0xFF:
-                    self.counter = struct.unpack('<H', bytes(self.raw[9:11]))[0]
-            if feature.get('tof', False):
-                self.range = struct.unpack('<h', bytes(self.raw[9:11]))[0]
+                    # self[field['name']] = struct.unpack('<h', bytes(self.raw[9:11]))[0] / field['divisor']
+                    self.__setattr__(field['name'], struct.unpack('<h', bytes(self.raw[9:11]))[0] / field['divisor'])
             for event in feature['events']:
                 bitNo = eventMapping.get(event)
                 if bitNo is not None:
