@@ -1,8 +1,8 @@
 import re
 import sys
 import json
-from datetime import datetime
 from .advertisement import Advertisement
+
 
 class MessageData:
     def __init__(self, msg):
@@ -24,13 +24,14 @@ class MessageData:
         else:
             raise ValueError()
 
+
 class MessageParser:
 
     @staticmethod
-    def parse(message, callback = None):
+    def parse(message, callback=None):
         try:
             data = json.loads(message)['data']
-        except:
+        except json.JSONDecodeError:
             data = re.split('\\r?\\n', message)
         results = []
         for msg in data:
@@ -39,4 +40,3 @@ class MessageParser:
                 callback(log, len(results))
             results.append(log)
         return results if not callable(callback) else None
-

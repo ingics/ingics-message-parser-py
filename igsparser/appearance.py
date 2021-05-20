@@ -49,4 +49,3 @@ appearanceList = {
     "5187": "Outdoor Location Pod.",
     "5188": "Outdoor Location and Navigation Pod."
 }
-

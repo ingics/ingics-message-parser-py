@@ -3,6 +3,7 @@ from .message_parser import MessageParser
 from .msd import Msd
 from .advertisement import Advertisement
 
+
 class MsdParser:
     @staticmethod
     def parse(content):
@@ -15,9 +16,11 @@ class MsdParser:
         else:
             raise ValueError('unsupport content type')
 
+
 class PayloadParser:
     @staticmethod
     def parse(payload):
         return Advertisement(payload)
 
-__all__ = [ 'MessageParser', 'PayloadParser', 'MsdParser' ]
+
+__all__ = ['MessageParser', 'PayloadParser', 'MsdParser']

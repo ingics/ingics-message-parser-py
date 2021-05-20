@@ -1,9 +1,9 @@
 import uuid
-import json
 import struct
 import pprint
 from .appearance import appearanceList
 from .msd import Msd
+
 
 class Advertisement:
 
@@ -30,7 +30,7 @@ class Advertisement:
             if adLength == 0:
                 break
             adType = self.raw[i + 1]
-            adData = self.raw[i + 2 : i + adLength + 1]
+            adData = self.raw[i + 2: i + adLength + 1]
             # Flags
             if adType == 0x01:
                 self.flags = struct.unpack('B', bytes(adData))[0]

@@ -5,6 +5,7 @@ import struct
 import pprint
 from .company_identifiers import companyIdentifiers
 
+
 class DictToObject(object):
     def __init__(self, dictionary):
         def _traverse(key, element):
@@ -21,23 +22,30 @@ class DictToObject(object):
             objd = dict(_traverse(k, v) for k, v in dictionary.items())
             self.__dict__.update(objd)
 
+
 class MsdEvents(DictToObject):
     def __init__(self, dictionary):
         DictToObject.__init__(self, dictionary)
+
     def __str__(self):
         return json.dumps(self.__dict__).replace('"', '\'')
+
     def __repr__(self):
         return json.dumps(self.__dict__).replace('"', '\'')
+
 
 class MsdAccelData(object):
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
+
     def __str__(self):
         return json.dumps(self.__dict__).replace('"', '\'')
+
     def __repr__(self):
         return json.dumps(self.__dict__).replace('"', '\'')
+
 
 class Msd:
 
@@ -64,16 +72,26 @@ class Msd:
 
     @staticmethod
     def microsoftType(typeId):
-        if typeId == 1: return 'XBox One'
-        elif typeId == 6: return 'Apple Phone'
-        elif typeId == 7: return 'Apple iPad'
-        elif typeId == 8: return 'Android device'
-        elif typeId == 9: return 'Windows 10 Desktop'
-        elif typeId == 11: return 'Windows 10 Phone'
-        elif typeId == 12: return 'Linus device'
-        elif typeId == 13: return 'Windows IoT'
-        elif typeId == 14: return 'Surface Hub'
-        else: return ''
+        if typeId == 1:
+            return 'XBox One'
+        elif typeId == 6:
+            return 'Apple Phone'
+        elif typeId == 7:
+            return 'Apple iPad'
+        elif typeId == 8:
+            return 'Android device'
+        elif typeId == 9:
+            return 'Windows 10 Desktop'
+        elif typeId == 11:
+            return 'Windows 10 Phone'
+        elif typeId == 12:
+            return 'Linus device'
+        elif typeId == 13:
+            return 'Windows IoT'
+        elif typeId == 14:
+            return 'Surface Hub'
+        else:
+            return ''
 
     def microsoft(self):
         self.scenario = struct.unpack('B', bytes(self.raw[2:3]))[0]
@@ -100,7 +118,7 @@ class Msd:
             self.refrssi = struct.unpack('b', bytes(self.raw[24:25]))[0]
             self.mfgReserved = bytes(self.raw[25:]).hex().upper()
 
-    ########  Ingics IBS Parser ###############################################
+    #  Ingics IBS Parser ###############################################
 
     bitButton = 0
     bitMoving = 1
@@ -111,43 +129,43 @@ class Msd:
     bitDin = 6
 
     ibs01Features = {
-        0x03: { 'name': 'iBS01', 'temp': False, 'humidity': False, 'events': [] },
-        0x04: { 'name': 'iBS01H', 'temp': False, 'humidity': False, 'events': [ 'hall' ] },
-        0x05: { 'name': 'iBS01T', 'temp': True, 'humidity': 'humi', 'events': [] },
-        0x06: { 'name': 'iBS01G', 'temp': False, 'humidity': False, 'events': [ 'moving', 'fall' ] },
-        0x07: { 'name': 'iBS01T', 'temp': True, 'humidity': False, 'events': [] }
+        0x03: {'name': 'iBS01', 'temp': False, 'humidity': False, 'events': []},
+        0x04: {'name': 'iBS01H', 'temp': False, 'humidity': False, 'events': ['hall']},
+        0x05: {'name': 'iBS01T', 'temp': True, 'humidity': 'humi', 'events': []},
+        0x06: {'name': 'iBS01G', 'temp': False, 'humidity': False, 'events': ['moving', 'fall']},
+        0x07: {'name': 'iBS01T', 'temp': True, 'humidity': False, 'events': []}
     }
 
     fieldDefs = {
-        'humi': { 'name': 'humidity', 'divisor': 1 },
-        'tof': { 'name': 'range', 'divisor': 1 },
-        'cnt': { 'name': 'counter', 'divisor': 1 },
-        'co2': { 'name': 'co2', 'divisor': 1 },
-        'tempExt': { 'name': 'temperatureExt', 'divisor': 100 },
+        'humi': {'name': 'humidity', 'divisor': 1},
+        'tof': {'name': 'range', 'divisor': 1},
+        'cnt': {'name': 'counter', 'divisor': 1},
+        'co2': {'name': 'co2', 'divisor': 1},
+        'tempExt': {'name': 'temperatureExt', 'divisor': 100},
     }
 
     ibsFeatures = {
-        0x01: { 'name': 'iBS02PIR2', 'temp': False, 'humidity': False, 'events': [ 'pir' ] },
-        0x02: { 'name': 'iBS02IR2', 'temp': False, 'humidity': 'cnt', 'events': [ 'ir' ] },
-        0x04: { 'name': 'iBS02M2', 'temp': False, 'humidity': 'cnt', 'events': [ 'din'] },
-        0x10: { 'name': 'iBS03', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
-        0x12: { 'name': 'iBS03P', 'temp': True, 'humidity': 'tempExt', 'events': [] },
-        0x13: { 'name': 'iBS03R', 'temp': False, 'humidity': 'tof', 'events': [] },
-        0x14: { 'name': 'iBS03T', 'temp': True, 'humidity': 'humi', 'events': [ 'button' ] },
-        0x15: { 'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
-        0x16: { 'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving', 'fall' ] },
-        0x17: { 'name': 'iBS03TP', 'temp': True, 'humidity': 'tempExt', 'events': [] },
-        0x18: { 'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
-        0x19: { 'name': 'iBS04', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
-        0x20: { 'name': 'iRS02', 'temp': True, 'humidity': False, 'events': [ 'hall' ] },
-        0x21: { 'name': 'iRS02TP', 'temp': True, 'humidity': 'tempExt', 'events': [ 'hall' ] },
-        0x22: { 'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': [ 'hall' ], 'accel': True },
-        0x30: { 'name': 'iBS05', 'temp': False, 'humidity': False, 'events': [ 'button' ] },
-        0x31: { 'name': 'iBS05H', 'temp': False, 'humidity': False, 'events': [ 'button', 'hall' ] },
-        0x32: { 'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': [ 'button' ] },
-        0x33: { 'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': [ 'button', 'moving' ]},
-        0x34: { 'name': 'iBS05CO2', 'temp': False, 'humidity': 'co2', 'events': [ 'button' ] },
-        0x40: { 'name': 'iBS06', 'temp': False, 'humidity': False, 'events': [] }
+        0x01: {'name': 'iBS02PIR2', 'temp': False, 'humidity': False, 'events': ['pir']},
+        0x02: {'name': 'iBS02IR2', 'temp': False, 'humidity': 'cnt', 'events': ['ir']},
+        0x04: {'name': 'iBS02M2', 'temp': False, 'humidity': 'cnt', 'events': ['din']},
+        0x10: {'name': 'iBS03', 'temp': False, 'humidity': False, 'events': ['button', 'hall']},
+        0x12: {'name': 'iBS03P', 'temp': True, 'humidity': 'tempExt', 'events': []},
+        0x13: {'name': 'iBS03R', 'temp': False, 'humidity': 'tof', 'events': []},
+        0x14: {'name': 'iBS03T', 'temp': True, 'humidity': 'humi', 'events': ['button']},
+        0x15: {'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': ['button']},
+        0x16: {'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': ['button', 'moving', 'fall']},
+        0x17: {'name': 'iBS03TP', 'temp': True, 'humidity': 'tempExt', 'events': []},
+        0x18: {'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': ['button']},
+        0x19: {'name': 'iBS04', 'temp': False, 'humidity': False, 'events': ['button']},
+        0x20: {'name': 'iRS02', 'temp': True, 'humidity': False, 'events': ['hall']},
+        0x21: {'name': 'iRS02TP', 'temp': True, 'humidity': 'tempExt', 'events': ['hall']},
+        0x22: {'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': ['hall'], 'accel': True},
+        0x30: {'name': 'iBS05', 'temp': False, 'humidity': False, 'events': ['button']},
+        0x31: {'name': 'iBS05H', 'temp': False, 'humidity': False, 'events': ['button', 'hall']},
+        0x32: {'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': ['button']},
+        0x33: {'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': ['button', 'moving']},
+        0x34: {'name': 'iBS05CO2', 'temp': False, 'humidity': 'co2', 'events': ['button']},
+        0x40: {'name': 'iBS06', 'temp': False, 'humidity': False, 'events': []}
     }
 
     def ingics_ibs(self, features):
@@ -178,12 +196,14 @@ class Msd:
             self.type = feature['name']
             if feature.get('temp', False):
                 if self.raw[7] != 0xAA and self.raw[8] != 0xAA:
-                    self.temperature = struct.unpack('<h', bytes(self.raw[7:9]))[0] / 100
+                    self.temperature = struct.unpack(
+                        '<h', bytes(self.raw[7:9]))[0] / 100
             if feature.get('humidity', False):
                 field = self.fieldDefs.get(feature['humidity'])
                 if self.raw[9] != 0xFF and self.raw[10] != 0xFF:
                     # self[field['name']] = struct.unpack('<h', bytes(self.raw[9:11]))[0] / field['divisor']
-                    self.__setattr__(field['name'], struct.unpack('<h', bytes(self.raw[9:11]))[0] / field['divisor'])
+                    self.__setattr__(field['name'], struct.unpack(
+                        '<h', bytes(self.raw[9:11]))[0] / field['divisor'])
             for event in feature['events']:
                 bitNo = eventMapping.get(event)
                 if bitNo is not None:
@@ -202,10 +222,14 @@ class Msd:
 
     @staticmethod
     def ingics_rs_type(subtype):
-        if subtype == 0x01:  return 'iBS02PIR-RS'
-        elif subtype == 0x02: return 'iBS02IR-RS'
-        elif subtype == 0x04: return 'iBS02HM'
-        else: return 'iBS02RS'
+        if subtype == 0x01:
+            return 'iBS02PIR-RS'
+        elif subtype == 0x02:
+            return 'iBS02IR-RS'
+        elif subtype == 0x04:
+            return 'iBS02HM'
+        else:
+            return 'iBS02RS'
 
     def ingics_rs(self):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
@@ -266,7 +290,8 @@ class Msd:
             self.events = {}
             if len(self.raw) > 10 and self.raw[7] != 0xFF and self.raw[8] != 0xFF:
                 self.type = 'iBS01T'
-                self.temperature = struct.unpack('<h', bytes(self.raw[7:9]))[0] / 100
+                self.temperature = struct.unpack(
+                    '<h', bytes(self.raw[7:9]))[0] / 100
                 self.humidity = struct.unpack('<h', bytes(self.raw[9:11]))[0]
             else:
                 # others, I cannot detect the real type from payload
