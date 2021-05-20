@@ -23,6 +23,11 @@ pip install pytest
 pytest -v
 ```
 
+### Bluepy
+
+There is an example code for scanning iBS03T device in example folder.
+The code has been tested on RPI3B+.
+
 ### Shell tools
 
 #### parse_payload.py
