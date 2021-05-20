@@ -113,7 +113,7 @@ class Msd:
     ibs01Features = {
         0x03: { 'name': 'iBS01', 'temp': False, 'humidity': False, 'events': [] },
         0x04: { 'name': 'iBS01H', 'temp': False, 'humidity': False, 'events': [ 'hall' ] },
-        0x05: { 'name': 'iBS01T', 'temp': True, 'humidity': True, 'events': [] },
+        0x05: { 'name': 'iBS01T', 'temp': True, 'humidity': 'humi', 'events': [] },
         0x06: { 'name': 'iBS01G', 'temp': False, 'humidity': False, 'events': [ 'moving', 'fall' ] },
         0x07: { 'name': 'iBS01T', 'temp': True, 'humidity': False, 'events': [] }
     }
