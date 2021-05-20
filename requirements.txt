@@ -1,1 +1,1 @@
-ingics-message-parser==0.3.0
+./
