@@ -1,25 +1,30 @@
 from igsparser import MessageParser, PayloadParser
 
+
 def test_ibs03t():
     message = '$GPRP,0C61CFC14A4E,E3C33FF55AEC,-50,02010612FF0D0083BC2801020A09FFFF000015030000'
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03T'
         assert msd.temperature == 23.14
-        assert msd.events.button == False
+        assert msd.events.button is False
         assert not hasattr(msd, 'humidity')
     MessageParser.parse(message, handler)
+
 
 def test_ibs03g():
     payload = '02010612FF0D0083BC3E0102AAAAFFFF000016130000'
     adv = PayloadParser.parse(payload)
     msd = adv.manufacturerData
     assert msd.type == 'iBS03G'
-    assert msd.events.moving == True
-    assert msd.events.boot == True
+    assert msd.events.moving is True
+    assert msd.events.boot is True
+
 
 def test_ibs03t_rh():
     message = '$GPRP,CDCB34E2D0A2,77AE1C1DC33D,-91,02010612FF0D0083BCAD0000A20B4700FFFF14000000'
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03T'
@@ -27,20 +32,24 @@ def test_ibs03t_rh():
         assert msd.humidity == 71
     MessageParser.parse(message, handler)
 
+
 def test_ibs03rg():
     message = '$GPRP,806FB0C9963F,C3674946C293,-71,02010619FF0D0081BC3E110A00F4FF00FF1600F6FF00FF1400F6FF08FF,1586245829'
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03RG'
         assert msd.battery == 3.18
-        assert msd.events.moving == True
+        assert msd.events.moving is True
         assert msd.accels[0].x == 10
         assert msd.accels[1].y == -10
         assert msd.accels[2].z == -248
     MessageParser.parse(message, handler)
 
+
 def test_ibs03tp():
     message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280100D809060A640017040000'
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.company == 'Ingics'
@@ -50,8 +59,10 @@ def test_ibs03tp():
         assert msd.temperatureExt == 25.66
     MessageParser.parse(message, handler)
 
+
 def test_ibs03r():
     message = '$GPRP,0C61CFC14A4E,E3C33FF55AEC,-50,02010612FF0D0083BCFFFF00FFFF6400000013030000'
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03R'
@@ -59,8 +70,10 @@ def test_ibs03r():
         assert not hasattr(msd, 'humidity')
     MessageParser.parse(message, handler)
 
+
 def test_ibs03p():
     message = '$GPRP,0C61CFC14745,E7DAE08E6FC3,-67,02010612FF0D0083BC280100AAAAD207000012080000,1608516227'
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03P'
@@ -68,13 +81,15 @@ def test_ibs03p():
         assert not hasattr(msd, 'humidity')
     MessageParser.parse(message, handler)
 
+
 def test_ibs03gp():
     message = '$GPRP,806FB0C9963F,C3674946C293,-71,0201061BFF0D0085BC3111160082FF9EFE4E001200D2FE10003A005CFFD9C5'
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03GP'
         assert msd.battery == 3.05
-        assert msd.events.moving == True
+        assert msd.events.moving is True
         assert msd.accels[0].x == 22
         assert msd.accels[1].y == 18
         assert msd.accels[2].z == -164

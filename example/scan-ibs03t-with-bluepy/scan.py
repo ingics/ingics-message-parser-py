@@ -1,5 +1,4 @@
 from bluepy.btle import Scanner, DefaultDelegate
-import binascii
 from igsparser import MsdParser
 import pprint
 
@@ -8,6 +7,7 @@ ibs = [
         'F9:73:D9:D3:66:62',
         '60:77:71:FC:D6:DB'
 ]
+
 
 class ScanDelegate(DefaultDelegate):
     def __init__(self):
@@ -22,6 +22,7 @@ class ScanDelegate(DefaultDelegate):
                     value = value.encode('ascii', 'ignore')
                 data = MsdParser.parse(value)
                 pprint.pprint(vars(data))
+
 
 scanner = Scanner().withDelegate(ScanDelegate())
 scanner.start()

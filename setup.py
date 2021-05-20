@@ -5,5 +5,5 @@ setup(
         version = "0.3.0",
         license = "MIT Licence",
         packages = find_packages(),
-        zip_safe=False
+        zip_safe = False
 )
