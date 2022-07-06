@@ -23,13 +23,13 @@ def test_ibs03g():
 
 
 def test_ibs03t_rh():
-    message = '$GPRP,CDCB34E2D0A2,77AE1C1DC33D,-91,02010612FF0D0083BCAD0000A20B4700FFFF14000000'
+    message = '$GPRP,0081F96B8F51,98F4AB891854,-66,02010612FF0D0083BC3E0100AA073100000014130000'
 
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03T'
-        assert msd.temperature == 29.78
-        assert msd.humidity == 71
+        assert msd.temperature == 19.62
+        assert msd.humidity == 49
     MessageParser.parse(message, handler)
 
 
@@ -61,12 +61,12 @@ def test_ibs03tp():
 
 
 def test_ibs03r():
-    message = '$GPRP,0C61CFC14A4E,E3C33FF55AEC,-50,02010612FF0D0083BCFFFF00FFFF6400000013030000'
+    message = '$GPRP,0C61CFC14A4E,E3C33FF55AEC,-50,02010612FF0D0083BC280100AAAA7200000013090000'
 
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS03R'
-        assert msd.range == 100
+        assert msd.range == 114
         assert not hasattr(msd, 'humidity')
     MessageParser.parse(message, handler)
 
@@ -94,4 +94,16 @@ def test_ibs03gp():
         assert msd.accels[1].y == 18
         assert msd.accels[2].z == -164
         assert msd.gp == 1012.98
+    MessageParser.parse(message, handler)
+
+
+
+def test_ibs03rs():
+    message = '$GPRP,F88A5EB8F226,F008D1798C68,-62,02010612FF0D0083BC430100AAAA150000001A040600'
+
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03RS'
+        assert msd.range == 21
+        assert msd.battery == 3.23
     MessageParser.parse(message, handler)

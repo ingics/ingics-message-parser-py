@@ -157,6 +157,7 @@ class Msd:
         0x17: {'name': 'iBS03TP', 'temp': True, 'humidity': 'tempExt', 'events': []},
         0x18: {'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': ['button']},
         0x19: {'name': 'iBS04', 'temp': False, 'humidity': False, 'events': ['button']},
+        0x1A: {'name': 'iBS03RS', 'temp': False, 'humidity': 'tof', 'events': []},
         0x20: {'name': 'iRS02', 'temp': True, 'humidity': False, 'events': ['hall']},
         0x21: {'name': 'iRS02TP', 'temp': True, 'humidity': 'tempExt', 'events': ['hall']},
         0x22: {'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': ['hall'], 'accel': True},
@@ -165,6 +166,9 @@ class Msd:
         0x32: {'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': ['button']},
         0x33: {'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': ['button', 'moving']},
         0x34: {'name': 'iBS05CO2', 'temp': False, 'humidity': 'co2', 'events': ['button']},
+        0x35: {'name': 'iBS05i', 'temp': False, 'humidity': False, 'events': ['button']},
+        0x36: {'name': 'iBS06i', 'temp': False, 'humidity': False, 'events': ['button']},
+        0x39: {'name': 'iWS01', 'temp': True, 'humidity': 'humi', 'events': ['button']},
         0x40: {'name': 'iBS06', 'temp': False, 'humidity': False, 'events': []}
     }
 
@@ -195,12 +199,12 @@ class Msd:
         if feature is not None:
             self.type = feature['name']
             if feature.get('temp', False):
-                if self.raw[7] != 0xAA and self.raw[8] != 0xAA:
+                if self.raw[7] != 0xAA or self.raw[8] != 0xAA:
                     self.temperature = struct.unpack(
                         '<h', bytes(self.raw[7:9]))[0] / 100
             if feature.get('humidity', False):
                 field = self.fieldDefs.get(feature['humidity'])
-                if self.raw[9] != 0xFF and self.raw[10] != 0xFF:
+                if self.raw[9] != 0xFF or self.raw[10] != 0xFF:
                     # self[field['name']] = struct.unpack('<h', bytes(self.raw[9:11]))[0] / field['divisor']
                     self.__setattr__(field['name'], struct.unpack(
                         '<h', bytes(self.raw[9:11]))[0] / field['divisor'])
@@ -217,6 +221,35 @@ class Msd:
         else:
             self.type = 'Unknown Tag'
 
+        self.events['boot'] = ((extraFlag & 0x10) != 0)
+        self.events = MsdEvents(self.events)
+
+    def ingics_ibs07(self):
+        self.type = 'iBS07'
+        self.company = 'Ingics'
+        self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
+        self.battery = struct.unpack('H', bytes(self.raw[4:6]))[0] / 100
+
+        subtype = struct.unpack('B', bytes(self.raw[19:20]))[0]
+        if subtype == 0x50:
+            if self.raw[7] != 0xAA or self.raw[8] != 0xAA:
+                self.temperature = struct.unpack(
+                    '<h', bytes(self.raw[7:9]))[0] / 100
+                self.humidity = struct.unpack(
+                    '<h', bytes(self.raw[9:11]))[0]
+                self.lux = struct.unpack('<h', bytes(self.raw[11:13]))[0]
+
+        self.accel = MsdAccelData(
+                struct.unpack('<h', bytes(self.raw[13:15]))[0],
+                struct.unpack('<h', bytes(self.raw[15:17]))[0],
+                struct.unpack('<h', bytes(self.raw[17:19]))[0]
+            )
+
+        extraFlag = struct.unpack('B', bytes(self.raw[20:21]))[0]
+        eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
+        self.eventFlag = eventFlag
+        self.events = {}
+        self.events['button'] = ((eventFlag & (1 << self.bitButton)) != 0)
         self.events['boot'] = ((extraFlag & 0x10) != 0)
         self.events = MsdEvents(self.events)
 
@@ -329,3 +362,6 @@ class Msd:
             elif self.mfg == 0x082C and code == 0xBC83:
                 # iBS05/iBS06
                 self.ingics_ibs(self.ibsFeatures)
+            elif self.mfg == 0x082C and code == 0xBC87:
+                # iBS07
+                self.ingics_ibs07()
