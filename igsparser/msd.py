@@ -284,8 +284,18 @@ class Msd:
         # 5900 81BC -> iBS01RG
         # 0D00 81BC -> iBS03RG
         # 0D00 85BC -> iBS03GP
+        # 2C08 81BC -> iBS05RG
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
-        self.type = 'iBS01RG' if self.mfg == 0x59 else 'iBS03RG' if self.code == 0xBC81 else 'iBS03GP'
+        if self.mfg == 0x59:
+            self.type = 'iBS01RG'
+        elif self.code == 0xBC81 and self.mfg == 0x0D:
+            self.type = 'iBS03RG'
+        elif self.code == 0xBC81 and self.mfg == 0x082C:
+            self.type = 'iBS05RG'
+        elif self.code == 0xBC85:
+            self.type = 'iBS03GP'
+        else:
+            self.type = 'iBSXXRG'
         battActFlag = struct.unpack('<H', bytes(self.raw[4:6]))[0]
         self.battery = (battActFlag & 0x0FFF) / 100
         self.evenFlag = (battActFlag & 0xF000) >> 12
@@ -348,7 +358,7 @@ class Msd:
                 # iBS01(H/G/T)
                 self.ingics_ibs01()
             elif code == 0xBC81:
-                # iBS01RG
+                # iBS01RG & iBS05RG
                 self.ingics_rg()
             elif code == 0xBC82:
                 # iBS02 for RS
