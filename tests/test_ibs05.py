@@ -44,13 +44,14 @@ def test_ibs05co2():
 
 
 def test_ibs05rg():
-    message = '$GPRP,806FB0C9963F,C3674946C293,-71,02010619FF2C0881BC3E110A00F4FF00FF1600F6FF00FF1400F6FF08FF,1586245829'
+    message = '$GPRP,806FB0C9963F,C3674946C293,-71,0201061BFF2C0886BC3E110A00F4FF00FF1600F6FF00FF1400F6FF08FF1704,1586245829'
 
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS05RG'
         assert msd.battery == 3.18
         assert msd.events.moving is True
+        assert msd.events.boot is True
         assert msd.accels[0].x == 10
         assert msd.accels[1].y == -10
         assert msd.accels[2].z == -248

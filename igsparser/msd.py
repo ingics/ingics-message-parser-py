@@ -284,13 +284,13 @@ class Msd:
         # 5900 81BC -> iBS01RG
         # 0D00 81BC -> iBS03RG
         # 0D00 85BC -> iBS03GP
-        # 2C08 81BC -> iBS05RG
+        # 2C08 86BC -> iBS05RG
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
         if self.mfg == 0x59:
             self.type = 'iBS01RG'
-        elif self.code == 0xBC81 and self.mfg == 0x0D:
+        elif self.code == 0xBC81:
             self.type = 'iBS03RG'
-        elif self.code == 0xBC81 and self.mfg == 0x082C:
+        elif self.code == 0xBC86:
             self.type = 'iBS05RG'
         elif self.code == 0xBC85:
             self.type = 'iBS03GP'
@@ -322,6 +322,10 @@ class Msd:
         ]
         if self.type == 'iBS03GP':
             self.gp = struct.unpack('<H', bytes(self.raw[24:26]))[0] / 50
+        if self.type == 'iBS05RG':
+            extraFlag = struct.unpack('B', bytes(self.raw[24:25]))[0]
+            self.events.boot = ((extraFlag & 0x10) != 0)
+
 
     def ingics_ibs01(self):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
@@ -357,8 +361,8 @@ class Msd:
             if self.mfg == 0x59 and code == 0xBC80:
                 # iBS01(H/G/T)
                 self.ingics_ibs01()
-            elif code == 0xBC81:
-                # iBS01RG & iBS05RG
+            elif code == 0xBC81 or code == 0XBC85 or code == 0xBC86:
+                # iBS01RG/iBS03RG/iBS05RG/iBS3GP
                 self.ingics_rg()
             elif code == 0xBC82:
                 # iBS02 for RS
@@ -366,9 +370,6 @@ class Msd:
             elif self.mfg == 0x0D and code == 0xBC83:
                 # iBS02/iBS03/iBS04
                 self.ingics_ibs(self.ibsFeatures)
-            elif self.mfg == 0x0D and code == 0XBC85:
-                # iBS03GP
-                self.ingics_rg()
             elif self.mfg == 0x082C and code == 0xBC83:
                 # iBS05/iBS06
                 self.ingics_ibs(self.ibsFeatures)
