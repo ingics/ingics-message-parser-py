@@ -158,6 +158,7 @@ class Msd:
         0x18: {'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': ['button']},
         0x19: {'name': 'iBS04', 'temp': False, 'humidity': False, 'events': ['button']},
         0x1A: {'name': 'iBS03RS', 'temp': False, 'humidity': 'tof', 'events': []},
+        0x1B: {'name': 'iBS03F', 'temp': False, 'humidity': 'cnt', 'events': ['din']},
         0x20: {'name': 'iRS02', 'temp': True, 'humidity': False, 'events': ['hall']},
         0x21: {'name': 'iRS02TP', 'temp': True, 'humidity': 'tempExt', 'events': ['hall']},
         0x22: {'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': ['hall'], 'accel': True},

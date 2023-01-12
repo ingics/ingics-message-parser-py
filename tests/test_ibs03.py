@@ -107,3 +107,12 @@ def test_ibs03rs():
         assert msd.range == 21
         assert msd.battery == 3.23
     MessageParser.parse(message, handler)
+
+def test_ibs03f():
+    message = '$GPRP,70B9507273F0,F008D1789200,-65,02010612FF0D0083BC290140AAAA000000001B090000'
+
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03F'
+        assert msd.events.din is True
+    MessageParser.parse(message, handler)
