@@ -65,7 +65,7 @@ def test_iws01():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iWS01'
         assert msd.temperature == 27.21
-        assert msd.humidity == 49
+        assert msd.humidity == 4.9
         assert msd.battery == 3.3
         assert msd.events.button is False
     MessageParser.parse(message, handler)

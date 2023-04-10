@@ -142,6 +142,7 @@ class Msd:
         'cnt': {'name': 'counter', 'divisor': 1},
         'co2': {'name': 'co2', 'divisor': 1},
         'tempExt': {'name': 'temperatureExt', 'divisor': 100},
+        'humi1D': {'name': 'humidity', 'divisor': 10}, # 0.1% resolution RH
     }
 
     ibsFeatures = {
@@ -169,7 +170,7 @@ class Msd:
         0x34: {'name': 'iBS05CO2', 'temp': False, 'humidity': 'co2', 'events': ['button']},
         0x35: {'name': 'iBS05i', 'temp': False, 'humidity': False, 'events': ['button']},
         0x36: {'name': 'iBS06i', 'temp': False, 'humidity': False, 'events': ['button']},
-        0x39: {'name': 'iWS01', 'temp': True, 'humidity': 'humi', 'events': ['button']},
+        0x39: {'name': 'iWS01', 'temp': True, 'humidity': 'humi1D', 'events': ['button']},
         0x40: {'name': 'iBS06', 'temp': False, 'humidity': False, 'events': []}
     }
 
