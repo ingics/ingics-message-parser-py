@@ -258,13 +258,13 @@ class Msd:
     @staticmethod
     def ingics_rs_type(subtype):
         if subtype == 0x01:
-            return 'iBS02PIR-RS'
+            return 'iBS02PIR2-RS'
         elif subtype == 0x02:
-            return 'iBS02IR-RS'
+            return 'iBS02IR2-RS'
         elif subtype == 0x04:
-            return 'iBS02HM'
+            return 'iBS02M2-RS'
         else:
-            return 'iBS02RS'
+            return 'iBS02-RS'
 
     def ingics_rs(self):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]

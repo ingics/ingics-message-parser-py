@@ -6,7 +6,7 @@ def test_ibs02hm():
 
     def handler(data, index):
         msd = data.advertisement.manufacturerData
-        assert msd.type == 'iBS02HM'
+        assert msd.type == 'iBS02M2-RS'
         assert msd.battery == 2.96
     MessageParser.parse(message, handler)
 
