@@ -170,7 +170,7 @@ class Msd:
         0x34: {'name': 'iBS05CO2', 'temp': False, 'humidity': 'co2', 'events': ['button']},
         0x35: {'name': 'iBS05i', 'temp': False, 'humidity': False, 'events': ['button']},
         0x36: {'name': 'iBS06i', 'temp': False, 'humidity': False, 'events': ['button']},
-        0x39: {'name': 'iWS01', 'temp': True, 'humidity': 'humi1D', 'events': ['button']},
+        0x39: {'name': 'iWS01', 'temp': True, 'humidity': 'humi1D', 'events': ['button']}, # deprecated, for backward compatibility
         0x40: {'name': 'iBS06', 'temp': False, 'humidity': False, 'events': []}
     }
 
@@ -227,19 +227,27 @@ class Msd:
         self.events = MsdEvents(self.events)
 
     def ingics_ibs07(self):
-        self.type = 'iBS07'
         self.company = 'Ingics'
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
         self.battery = struct.unpack('H', bytes(self.raw[4:6]))[0] / 100
 
         subtype = struct.unpack('B', bytes(self.raw[19:20]))[0]
         if subtype == 0x50:
+            self.type = 'iBS07'
             if self.raw[7] != 0xAA or self.raw[8] != 0xAA:
                 self.temperature = struct.unpack(
                     '<h', bytes(self.raw[7:9]))[0] / 100
                 self.humidity = struct.unpack(
                     '<h', bytes(self.raw[9:11]))[0]
                 self.lux = struct.unpack('<h', bytes(self.raw[11:13]))[0]
+        elif subtype == 0x39:
+            self.type = 'iWS01'
+            if self.raw[7] != 0xAA or self.raw[8] != 0xAA:
+                self.temperature = struct.unpack(
+                    '<h', bytes(self.raw[7:9]))[0] / 100
+            if self.raw[9] != 0xAA or self.raw[10] != 0xAA:
+                self.humidity = struct.unpack(
+                    '<h', bytes(self.raw[9:11]))[0] / 10
 
         self.accel = MsdAccelData(
                 struct.unpack('<h', bytes(self.raw[13:15]))[0],

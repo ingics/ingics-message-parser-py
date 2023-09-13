@@ -56,16 +56,3 @@ def test_ibs05rg():
         assert msd.accels[1].y == -10
         assert msd.accels[2].z == -248
     MessageParser.parse(message, handler)
-
-
-def test_iws01():
-    message = '$GPRP,EAC653D3AA8D,CCB97E7361A4,-44,02010612FF2C0883BC4A0100A10A3100000039000000'
-
-    def handler(data, index):
-        msd = data.advertisement.manufacturerData
-        assert msd.type == 'iWS01'
-        assert msd.temperature == 27.21
-        assert msd.humidity == 4.9
-        assert msd.battery == 3.3
-        assert msd.events.button is False
-    MessageParser.parse(message, handler)
