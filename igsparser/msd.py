@@ -128,50 +128,92 @@ class Msd:
     bitIR = 5
     bitDin = 6
 
-    ibs01Features = {
-        0x03: {'name': 'iBS01', 'temp': False, 'humidity': False, 'events': []},
-        0x04: {'name': 'iBS01H', 'temp': False, 'humidity': False, 'events': ['hall']},
-        0x05: {'name': 'iBS01T', 'temp': True, 'humidity': 'humi', 'events': []},
-        0x06: {'name': 'iBS01G', 'temp': False, 'humidity': False, 'events': ['moving', 'fall']},
-        0x07: {'name': 'iBS01T', 'temp': True, 'humidity': False, 'events': []}
-    }
+    def fieldDummy(self, idx):
+        return 2
 
-    fieldDefs = {
-        'humi': {'name': 'humidity', 'divisor': 1},
-        'tof': {'name': 'range', 'divisor': 1},
-        'cnt': {'name': 'counter', 'divisor': 1},
-        'co2': {'name': 'co2', 'divisor': 1},
-        'tempExt': {'name': 'temperatureExt', 'divisor': 100},
-        'humi1D': {'name': 'humidity', 'divisor': 10}, # 0.1% resolution RH
+    def fieldTemp(self, idx):
+        if self.raw[idx] != 0xAA or self.raw[idx+1] != 0xAA:
+            self.temperature = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0] / 100
+        return 2
+
+    def fieldTempExt(self, idx):
+        if self.raw[idx] != 0xAA or self.raw[idx+1] != 0xAA:
+            self.temperatureExt = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0] / 100
+        return 2
+
+    def fieldHumidity(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.humidity = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
+    def fieldHumidity1D(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.humidity = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0] / 10
+        return 2
+
+    def fieldRange(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.range = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
+    def fieldCounter(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.counter = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
+    def fieldCo2(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.co2 = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
+    def fieldLux(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.lux = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
+    def fieldAccel(self, idx):
+        self.accel = MsdAccelData(
+            struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0],
+            struct.unpack('<h', bytes(self.raw[idx+2:idx+4]))[0],
+            struct.unpack('<h', bytes(self.raw[idx+4:idx+6]))[0]
+        )
+        return 6
+
+    ibs01Features = {
+        0x03: {'name': 'iBS01', 'fields': ['fieldDummy', 'fieldDummy'], 'events': []},
+        0x04: {'name': 'iBS01H', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['hall']},
+        0x05: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldHumidity'], 'events': []},
+        0x06: {'name': 'iBS01G', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['moving', 'fall']},
+        0x07: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldDummy'], 'events': []}
     }
 
     ibsFeatures = {
-        0x01: {'name': 'iBS02PIR2', 'temp': False, 'humidity': False, 'events': ['pir']},
-        0x02: {'name': 'iBS02IR2', 'temp': False, 'humidity': 'cnt', 'events': ['ir']},
-        0x04: {'name': 'iBS02M2', 'temp': False, 'humidity': 'cnt', 'events': ['din']},
-        0x10: {'name': 'iBS03', 'temp': False, 'humidity': False, 'events': ['button', 'hall']},
-        0x12: {'name': 'iBS03P', 'temp': True, 'humidity': 'tempExt', 'events': []},
-        0x13: {'name': 'iBS03R', 'temp': False, 'humidity': 'tof', 'events': []},
-        0x14: {'name': 'iBS03T', 'temp': True, 'humidity': 'humi', 'events': ['button']},
-        0x15: {'name': 'iBS03T', 'temp': True, 'humidity': False, 'events': ['button']},
-        0x16: {'name': 'iBS03G', 'temp': False, 'humidity': False, 'events': ['button', 'moving', 'fall']},
-        0x17: {'name': 'iBS03TP', 'temp': True, 'humidity': 'tempExt', 'events': []},
-        0x18: {'name': 'iBS04i', 'temp': False, 'humidity': False, 'events': ['button']},
-        0x19: {'name': 'iBS04', 'temp': False, 'humidity': False, 'events': ['button']},
-        0x1A: {'name': 'iBS03RS', 'temp': False, 'humidity': 'tof', 'events': []},
-        0x1B: {'name': 'iBS03F', 'temp': False, 'humidity': 'cnt', 'events': ['din']},
-        0x20: {'name': 'iRS02', 'temp': True, 'humidity': False, 'events': ['hall']},
-        0x21: {'name': 'iRS02TP', 'temp': True, 'humidity': 'tempExt', 'events': ['hall']},
-        0x22: {'name': 'iRS02RG', 'temp': False, 'humidity': False, 'events': ['hall'], 'accel': True},
-        0x30: {'name': 'iBS05', 'temp': False, 'humidity': False, 'events': ['button']},
-        0x31: {'name': 'iBS05H', 'temp': False, 'humidity': False, 'events': ['button', 'hall']},
-        0x32: {'name': 'iBS05T', 'temp': True, 'humidity': False, 'events': ['button']},
-        0x33: {'name': 'iBS05G', 'temp': False, 'humidity': False, 'events': ['button', 'moving']},
-        0x34: {'name': 'iBS05CO2', 'temp': False, 'humidity': 'co2', 'events': ['button']},
-        0x35: {'name': 'iBS05i', 'temp': False, 'humidity': False, 'events': ['button']},
-        0x36: {'name': 'iBS06i', 'temp': False, 'humidity': False, 'events': ['button']},
-        0x39: {'name': 'iWS01', 'temp': True, 'humidity': 'humi1D', 'events': ['button']}, # deprecated, for backward compatibility
-        0x40: {'name': 'iBS06', 'temp': False, 'humidity': False, 'events': []}
+        0x01: {'name': 'iBS02PIR2', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['pir']},
+        0x02: {'name': 'iBS02IR2', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['ir']},
+        0x04: {'name': 'iBS02M2', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['din']},
+        0x10: {'name': 'iBS03', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'hall']},
+        0x12: {'name': 'iBS03P', 'fields': ['fieldDummy', 'fieldTempExt'], 'events': []},
+        0x13: {'name': 'iBS03R', 'fields': ['fieldDummy', 'fieldRange'], 'events': []},
+        0x14: {'name': 'iBS03T', 'fields': ['fieldTemp', 'fieldHumidity'], 'events': ['button']},
+        0x15: {'name': 'iBS03T', 'fields': ['fieldTemp', 'fieldDummy'], 'events': ['button']},
+        0x16: {'name': 'iBS03G', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'moving', 'fall']},
+        0x17: {'name': 'iBS03TP', 'fields': ['fieldTemp', 'fieldTempExt'], 'events': []},
+        0x18: {'name': 'iBS04i', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
+        0x19: {'name': 'iBS04', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
+        0x1A: {'name': 'iBS03RS', 'fields': ['fieldDummy', 'fieldRange'], 'events': []},
+        0x1B: {'name': 'iBS03F', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['din']},
+        0x20: {'name': 'iRS02', 'fields': ['fieldTemp', 'fieldDummy'], 'events': ['hall']},
+        0x21: {'name': 'iRS02TP', 'fields': ['fieldTemp', 'fieldTempExt'], 'events': ['hall']},
+        0x22: {'name': 'iRS02RG', 'fields': ['fieldAccel'], 'events': ['hall']},
+        0x30: {'name': 'iBS05', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
+        0x31: {'name': 'iBS05H', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'hall']},
+        0x32: {'name': 'iBS05T', 'fields': ['fieldTemp', 'fieldDummy'], 'events': ['button']},
+        0x33: {'name': 'iBS05G', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'moving']},
+        0x34: {'name': 'iBS05CO2', 'fields': ['fieldDummy', 'fieldCo2'], 'events': ['button']},
+        0x35: {'name': 'iBS05i', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
+        0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
+        0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
+        0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy'], 'events': []}
     }
 
     def ingics_ibs(self, features):
@@ -187,8 +229,8 @@ class Msd:
         }
 
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
-        eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
         extraFlag = struct.unpack('B', bytes(self.raw[14:15]))[0]
+        eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
 
         self.company = 'Ingics'
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
@@ -200,26 +242,13 @@ class Msd:
         feature = features.get(subtype)
         if feature is not None:
             self.type = feature['name']
-            if feature.get('temp', False):
-                if self.raw[7] != 0xAA or self.raw[8] != 0xAA:
-                    self.temperature = struct.unpack(
-                        '<h', bytes(self.raw[7:9]))[0] / 100
-            if feature.get('humidity', False):
-                field = self.fieldDefs.get(feature['humidity'])
-                if self.raw[9] != 0xFF or self.raw[10] != 0xFF:
-                    # self[field['name']] = struct.unpack('<h', bytes(self.raw[9:11]))[0] / field['divisor']
-                    self.__setattr__(field['name'], struct.unpack(
-                        '<h', bytes(self.raw[9:11]))[0] / field['divisor'])
+            idx = 7
+            for field in feature['fields']:
+                idx += getattr(self, field)(idx)
             for event in feature['events']:
                 bitNo = eventMapping.get(event)
                 if bitNo is not None:
                     self.events[event] = (eventFlag & (1 << bitNo) != 0)
-            if 'accel' in feature and feature['accel']:
-                self.accel = MsdAccelData(
-                    struct.unpack('h', bytes(self.raw[7:9]))[0],
-                    struct.unpack('h', bytes(self.raw[9:11]))[0],
-                    struct.unpack('h', bytes(self.raw[11:13]))[0]
-                )
         else:
             self.type = 'Unknown Tag'
 
@@ -234,26 +263,15 @@ class Msd:
         subtype = struct.unpack('B', bytes(self.raw[19:20]))[0]
         if subtype == 0x50:
             self.type = 'iBS07'
-            if self.raw[7] != 0xAA or self.raw[8] != 0xAA:
-                self.temperature = struct.unpack(
-                    '<h', bytes(self.raw[7:9]))[0] / 100
-                self.humidity = struct.unpack(
-                    '<h', bytes(self.raw[9:11]))[0]
-                self.lux = struct.unpack('<h', bytes(self.raw[11:13]))[0]
+            self.fieldTemp(7)
+            if hasattr(self, 'temperature'):
+                self.fieldHumidity(9)
+                self.fieldLux(11)
+            self.fieldAccel(13)
         elif subtype == 0x39:
             self.type = 'iWS01'
-            if self.raw[7] != 0xAA or self.raw[8] != 0xAA:
-                self.temperature = struct.unpack(
-                    '<h', bytes(self.raw[7:9]))[0] / 100
-            if self.raw[9] != 0xAA or self.raw[10] != 0xAA:
-                self.humidity = struct.unpack(
-                    '<h', bytes(self.raw[9:11]))[0] / 10
-
-        self.accel = MsdAccelData(
-                struct.unpack('<h', bytes(self.raw[13:15]))[0],
-                struct.unpack('<h', bytes(self.raw[15:17]))[0],
-                struct.unpack('<h', bytes(self.raw[17:19]))[0]
-            )
+            self.fieldTemp(7)
+            self.fieldHumidity1D(9)
 
         extraFlag = struct.unpack('B', bytes(self.raw[20:21]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
