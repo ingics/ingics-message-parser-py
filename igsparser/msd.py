@@ -127,6 +127,8 @@ class Msd:
     bitPIR = 4
     bitIR = 5
     bitDin = 6
+    bitDin2 = 3 # same bit as fall, for iBS03QY only
+    bitDetect = 5 # same bit as IR, for iBS08 only
 
     def fieldDummy(self, idx):
         return 2
@@ -139,6 +141,11 @@ class Msd:
     def fieldTempExt(self, idx):
         if self.raw[idx] != 0xAA or self.raw[idx+1] != 0xAA:
             self.temperatureExt = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0] / 100
+        return 2
+
+    def fieldTempEnv(self, idx):
+        if self.raw[idx] != 0xAA or self.raw[idx+1] != 0xAA:
+            self.temperatureEnv = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0] / 100
         return 2
 
     def fieldHumidity(self, idx):
@@ -171,6 +178,10 @@ class Msd:
             self.lux = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
+    def fieldUser(self, idx):
+        self.user = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
     def fieldAccel(self, idx):
         self.accel = MsdAccelData(
             struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0],
@@ -179,41 +190,56 @@ class Msd:
         )
         return 6
 
+    def fieldAccels(self, idx):
+        self.accels = []
+        for i in range(0, 3):
+            self.accels.append(MsdAccelData(
+                struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0],
+                struct.unpack('<h', bytes(self.raw[idx+2:idx+4]))[0],
+                struct.unpack('<h', bytes(self.raw[idx+4:idx+6]))[0]
+            ))
+            idx += 6
+        return 18
+
     ibs01Features = {
-        0x03: {'name': 'iBS01', 'fields': ['fieldDummy', 'fieldDummy'], 'events': []},
-        0x04: {'name': 'iBS01H', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['hall']},
-        0x05: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldHumidity'], 'events': []},
-        0x06: {'name': 'iBS01G', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['moving', 'fall']},
-        0x07: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldDummy'], 'events': []}
+        0x03: {'name': 'iBS01', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
+        0x04: {'name': 'iBS01H', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['hall']},
+        0x05: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldUser'], 'events': []},
+        0x06: {'name': 'iBS01G', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['moving', 'fall']},
+        0x07: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': []}
     }
 
     ibsFeatures = {
-        0x01: {'name': 'iBS02PIR2', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['pir']},
-        0x02: {'name': 'iBS02IR2', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['ir']},
-        0x04: {'name': 'iBS02M2', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['din']},
-        0x10: {'name': 'iBS03', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'hall']},
-        0x12: {'name': 'iBS03P', 'fields': ['fieldDummy', 'fieldTempExt'], 'events': []},
-        0x13: {'name': 'iBS03R', 'fields': ['fieldDummy', 'fieldRange'], 'events': []},
-        0x14: {'name': 'iBS03T', 'fields': ['fieldTemp', 'fieldHumidity'], 'events': ['button']},
-        0x15: {'name': 'iBS03T', 'fields': ['fieldTemp', 'fieldDummy'], 'events': ['button']},
-        0x16: {'name': 'iBS03G', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'moving', 'fall']},
-        0x17: {'name': 'iBS03TP', 'fields': ['fieldTemp', 'fieldTempExt'], 'events': []},
-        0x18: {'name': 'iBS04i', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
-        0x19: {'name': 'iBS04', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
-        0x1A: {'name': 'iBS03RS', 'fields': ['fieldDummy', 'fieldRange'], 'events': []},
-        0x1B: {'name': 'iBS03F', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['din']},
-        0x20: {'name': 'iRS02', 'fields': ['fieldTemp', 'fieldDummy'], 'events': ['hall']},
-        0x21: {'name': 'iRS02TP', 'fields': ['fieldTemp', 'fieldTempExt'], 'events': ['hall']},
+        0x01: {'name': 'iBS02PIR2', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['pir']},
+        0x02: {'name': 'iBS02IR2', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['ir']},
+        0x04: {'name': 'iBS02M2', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['din']},
+        0x10: {'name': 'iBS03', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'hall']},
+        0x12: {'name': 'iBS03P', 'fields': ['fieldDummy', 'fieldTempExt', 'fieldUser'], 'events': []},
+        0x13: {'name': 'iBS03R', 'fields': ['fieldDummy', 'fieldRange', 'fieldUser'], 'events': []},
+        0x14: {'name': 'iBS03T', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldUser'], 'events': ['button']},
+        0x15: {'name': 'iBS03T', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x16: {'name': 'iBS03G', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'moving', 'fall']},
+        0x17: {'name': 'iBS03TP', 'fields': ['fieldTemp', 'fieldTempExt', 'fieldUser'], 'events': []},
+        0x18: {'name': 'iBS04i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x19: {'name': 'iBS04', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x1A: {'name': 'iBS03RS', 'fields': ['fieldDummy', 'fieldRange', 'fieldUser'], 'events': []},
+        0x1B: {'name': 'iBS03F', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['din']},
+        0x1C: {'name': 'iBS03Q', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['din']},
+        0x1D: {'name': 'iBS03QY', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['din', 'din2']},
+        0x20: {'name': 'iRS02', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['hall']},
+        0x21: {'name': 'iRS02TP', 'fields': ['fieldTemp', 'fieldTempExt', 'fieldUser'], 'events': ['hall']},
         0x22: {'name': 'iRS02RG', 'fields': ['fieldAccel'], 'events': ['hall']},
-        0x30: {'name': 'iBS05', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
-        0x31: {'name': 'iBS05H', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'hall']},
-        0x32: {'name': 'iBS05T', 'fields': ['fieldTemp', 'fieldDummy'], 'events': ['button']},
-        0x33: {'name': 'iBS05G', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button', 'moving']},
-        0x34: {'name': 'iBS05CO2', 'fields': ['fieldDummy', 'fieldCo2'], 'events': ['button']},
-        0x35: {'name': 'iBS05i', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
-        0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy'], 'events': ['button']},
+        0x23: {'name': 'iBS03NT', 'fields': ['fieldDummy', 'fieldTempExt', 'fieldUser'], 'events': []},
+        0x30: {'name': 'iBS05', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x31: {'name': 'iBS05H', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'hall']},
+        0x32: {'name': 'iBS05T', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x33: {'name': 'iBS05G', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'moving']},
+        0x34: {'name': 'iBS05CO2', 'fields': ['fieldDummy', 'fieldCo2', 'fieldUser'], 'events': ['button']},
+        0x35: {'name': 'iBS05i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
         0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
-        0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy'], 'events': []}
+        0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
+        0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']},
     }
 
     def ingics_ibs(self, features):
@@ -225,7 +251,9 @@ class Msd:
             'fall': self.bitFall,
             'pir': self.bitPIR,
             'ir': self.bitIR,
-            'din': self.bitDin
+            'din': self.bitDin,
+            'din2': self.bitDin2,
+            'detect': self.bitDetect
         }
 
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
@@ -235,7 +263,6 @@ class Msd:
         self.company = 'Ingics'
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
         self.battery = struct.unpack('H', bytes(self.raw[4:6]))[0] / 100
-        self.user = struct.unpack('H', bytes(self.raw[11:13]))[0]
         self.events = {}
         self.eventFlag = eventFlag
 
@@ -331,23 +358,7 @@ class Msd:
             'button': (battActFlag & 0x2000) != 0,
             'moving': (battActFlag & 0x1000) != 0
         })
-        self.accels = [
-            MsdAccelData(
-                struct.unpack('<h', bytes(self.raw[6:8]))[0],
-                struct.unpack('<h', bytes(self.raw[8:10]))[0],
-                struct.unpack('<h', bytes(self.raw[10:12]))[0]
-            ),
-            MsdAccelData(
-                struct.unpack('<h', bytes(self.raw[12:14]))[0],
-                struct.unpack('<h', bytes(self.raw[14:16]))[0],
-                struct.unpack('<h', bytes(self.raw[16:18]))[0]
-            ),
-            MsdAccelData(
-                struct.unpack('<h', bytes(self.raw[18:20]))[0],
-                struct.unpack('<h', bytes(self.raw[20:22]))[0],
-                struct.unpack('<h', bytes(self.raw[22:24]))[0]
-            )
-        ]
+        self.fieldAccels(6)
         if self.type == 'iBS03GP':
             self.gp = struct.unpack('<H', bytes(self.raw[24:26]))[0] / 50
         if self.type == 'iBS05RG':

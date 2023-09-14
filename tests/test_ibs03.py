@@ -116,3 +116,49 @@ def test_ibs03f():
         assert msd.type == 'iBS03F'
         assert msd.events.din is True
     MessageParser.parse(message, handler)
+
+def test_ibs03q():
+    message = '$GPRP,70B9507273F0,F008D1789200,-65,02010612FF0D0083BC330140AAAA030000001C090000'
+
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03Q'
+        assert msd.battery == 3.07
+        assert msd.counter == 3
+        assert msd.events.din is True
+    MessageParser.parse(message, handler)
+
+def test_ibs03qy():
+    message1 = '$GPRP,70B9507273F0,F008D1789200,-65,02010612FF0D0083BC290148AAAA050000001D090000'
+
+    def handler1(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03QY'
+        assert msd.battery == 2.97
+        assert msd.counter == 5
+        assert msd.events.din is True
+        assert msd.events.din2 is True
+    MessageParser.parse(message1, handler1)
+
+    message2 = '$GPRP,70B9507273F0,F008D1789200,-65,02010612FF0D0083BC290108AAAAFF0000001D090000'
+
+    def handler2(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03QY'
+        assert msd.battery == 2.97
+        assert msd.counter == 255
+        assert msd.events.din is False
+        assert msd.events.din2 is True
+    MessageParser.parse(message2, handler2)
+
+def test_ibs03nt():
+    message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280100D809060A640023040000'
+
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03NT'
+        assert msd.battery == 2.96
+        assert hasattr(msd, 'temperature') == False
+        assert msd.temperatureExt == 25.66
+        assert msd.user == 100
+    MessageParser.parse(message, handler)
