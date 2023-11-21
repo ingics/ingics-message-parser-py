@@ -168,6 +168,11 @@ class Msd:
             self.counter = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
+    def fieldVoltage(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.voltage = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
     def fieldCo2(self, idx):
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
             self.co2 = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
@@ -230,6 +235,8 @@ class Msd:
         0x21: {'name': 'iRS02TP', 'fields': ['fieldTemp', 'fieldTempExt', 'fieldUser'], 'events': ['hall']},
         0x22: {'name': 'iRS02RG', 'fields': ['fieldAccel'], 'events': ['hall']},
         0x23: {'name': 'iBS03NT', 'fields': ['fieldDummy', 'fieldTempExt', 'fieldUser'], 'events': []},
+        0x24: {'name': 'iBS03AD', 'fields': ['fieldDummy', 'fieldVoltage', 'fieldUser'], 'events': []},
+        0x25: {'name': 'iBS03DI', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['din']},
         0x30: {'name': 'iBS05', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
         0x31: {'name': 'iBS05H', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'hall']},
         0x32: {'name': 'iBS05T', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['button']},

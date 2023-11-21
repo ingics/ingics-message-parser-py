@@ -162,3 +162,27 @@ def test_ibs03nt():
         assert msd.temperatureExt == 25.66
         assert msd.user == 100
     MessageParser.parse(message, handler)
+
+def test_ibs03ad():
+    message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280100D809060A640024040000'
+
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03AD'
+        assert msd.battery == 2.96
+        assert hasattr(msd, 'temperature') == False
+        assert msd.voltage == 2566
+        assert msd.user == 100
+    MessageParser.parse(message, handler)
+
+def test_ibs03di():
+    message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280140D809060A640025040000'
+
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03DI'
+        assert msd.battery == 2.96
+        assert hasattr(msd, 'temperature') == False
+        assert msd.events.din is True
+        assert msd.user == 100
+    MessageParser.parse(message, handler)
