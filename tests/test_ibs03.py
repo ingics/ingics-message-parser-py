@@ -185,4 +185,5 @@ def test_ibs03di():
         assert hasattr(msd, 'temperature') == False
         assert msd.events.din is True
         assert msd.user == 100
+        assert msd.counter == 2566
     MessageParser.parse(message, handler)
