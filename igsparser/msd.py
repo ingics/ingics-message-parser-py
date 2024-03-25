@@ -150,37 +150,44 @@ class Msd:
 
     def fieldHumidity(self, idx):
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
-            self.humidity = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+            self.humidity = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
     def fieldHumidity1D(self, idx):
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
-            self.humidity = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0] / 10
+            self.humidity = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0] / 10
         return 2
 
     def fieldRange(self, idx):
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
-            self.range = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+            self.range = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
     def fieldCounter(self, idx):
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
-            self.counter = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+            self.counter = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
     def fieldVoltage(self, idx):
+        # voltage send as int in mV
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
-            self.voltage = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+            self.voltage = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+    
+    def fieldCurrent(self, idx):
+        # current sned as unsigned int in µA
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.current = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
     def fieldCo2(self, idx):
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
-            self.co2 = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+            self.co2 = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
     def fieldLux(self, idx):
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
-            self.lux = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+            self.lux = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
     def fieldUser(self, idx):
@@ -234,9 +241,10 @@ class Msd:
         0x20: {'name': 'iRS02', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['hall']},
         0x21: {'name': 'iRS02TP', 'fields': ['fieldTemp', 'fieldTempExt', 'fieldUser'], 'events': ['hall']},
         0x22: {'name': 'iRS02RG', 'fields': ['fieldAccel'], 'events': ['hall']},
-        0x23: {'name': 'iBS03NT', 'fields': ['fieldDummy', 'fieldTempExt', 'fieldUser'], 'events': []},
-        0x24: {'name': 'iBS03AD', 'fields': ['fieldDummy', 'fieldVoltage', 'fieldUser'], 'events': []},
-        0x25: {'name': 'iBS03DI', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['din']},
+        0x23: {'name': 'iBS03AD-NTC', 'fields': ['fieldDummy', 'fieldTempExt', 'fieldUser'], 'events': []},        
+        0x24: {'name': 'iBS03AD-V', 'fields': ['fieldDummy', 'fieldVoltage', 'fieldUser'], 'events': []},
+        0x25: {'name': 'iBS03AD-D', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['din']},
+        0x26: {'name': 'iBS03AD-A', 'fields': ['fieldDummy', 'fieldCurrent', 'fieldUser'], 'events': []},
         0x30: {'name': 'iBS05', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
         0x31: {'name': 'iBS05H', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'hall']},
         0x32: {'name': 'iBS05T', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['button']},
@@ -246,6 +254,10 @@ class Msd:
         0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
         0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
         0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
+        0x41: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldUser'], 'events': ['button']},
+        0x42: {'name': 'iBS08R', 'fields': ['fieldDummy', 'fieldRange', 'fieldUser'], 'events': []},
+        0x43: {'name': 'iBS08PS', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']},
+        0x44: {'name': 'iBS08PIR', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['pir']},
         0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']},
     }
 

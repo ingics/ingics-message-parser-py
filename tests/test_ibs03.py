@@ -151,39 +151,51 @@ def test_ibs03qy():
         assert msd.events.din2 is True
     MessageParser.parse(message2, handler2)
 
-def test_ibs03nt():
+def test_ibs03ad_ntc():
     message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280100D809060A640023040000'
 
     def handler(data, index):
         msd = data.advertisement.manufacturerData
-        assert msd.type == 'iBS03NT'
+        assert msd.type == 'iBS03AD-NTC'
         assert msd.battery == 2.96
         assert hasattr(msd, 'temperature') == False
         assert msd.temperatureExt == 25.66
         assert msd.user == 100
     MessageParser.parse(message, handler)
 
-def test_ibs03ad():
+def test_ibs03ad_v():
     message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280100D809060A640024040000'
 
     def handler(data, index):
         msd = data.advertisement.manufacturerData
-        assert msd.type == 'iBS03AD'
+        assert msd.type == 'iBS03AD-V'
         assert msd.battery == 2.96
         assert hasattr(msd, 'temperature') == False
         assert msd.voltage == 2566
         assert msd.user == 100
     MessageParser.parse(message, handler)
 
-def test_ibs03di():
+def test_ibs03ad_d():
     message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280140D809060A640025040000'
 
     def handler(data, index):
         msd = data.advertisement.manufacturerData
-        assert msd.type == 'iBS03DI'
+        assert msd.type == 'iBS03AD-D'
         assert msd.battery == 2.96
         assert hasattr(msd, 'temperature') == False
         assert msd.events.din is True
         assert msd.user == 100
         assert msd.counter == 2566
+    MessageParser.parse(message, handler)
+
+def test_ibs03ad_a():
+    message = '$GPRP,1804ED7D9C00,C82B96AE3B04,-48,02010612FF0D0083BC280140D809060A640026040000'
+
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS03AD-A'
+        assert msd.battery == 2.96
+        assert msd.current == 2566
+        assert msd.user == 100
+        assert hasattr(msd, 'temperature') == False
     MessageParser.parse(message, handler)
