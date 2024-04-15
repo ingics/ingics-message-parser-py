@@ -29,12 +29,19 @@ def test_ibs08r():
     assert msd.user == 0
 
 def test_ibs08ps():
-    payload = '02010612FF2C0883BC380120C0086608000043080400'
+    payload = '02010612FF2C0883BC1E012021071E00000043010100'
     msd = PayloadParser.parse(payload).manufacturerData
     assert msd.type == 'iBS08PS'
-    assert msd.battery == 3.12
-    assert msd.temperature == 21.5
-    assert msd.temperatureEnv == 22.4
+    assert msd.battery == 2.86
+    assert msd.value == 1825
+    assert msd.counter == 30
+    assert msd.user == 0
+    payload = '02010612FF2C0883BC170100B2FF1800000043010100'
+    msd = PayloadParser.parse(payload).manufacturerData
+    assert msd.type == 'iBS08PS'
+    assert msd.battery == 2.79
+    assert msd.value == -78
+    assert msd.counter == 24
     assert msd.user == 0
 
 def test_ibs08pir():

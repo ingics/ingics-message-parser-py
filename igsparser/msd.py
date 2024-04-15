@@ -194,6 +194,10 @@ class Msd:
         self.user = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
+    def fieldValue(self, idx):
+        self.value = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
+        return 2
+
     def fieldAccel(self, idx):
         self.accel = MsdAccelData(
             struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0],
@@ -256,7 +260,7 @@ class Msd:
         0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
         0x41: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldUser'], 'events': ['button']},
         0x42: {'name': 'iBS08R', 'fields': ['fieldDummy', 'fieldRange', 'fieldUser'], 'events': []},
-        0x43: {'name': 'iBS08PS', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']},
+        0x43: {'name': 'iBS08PS', 'fields': ['fieldValue', 'fieldCounter', 'fieldUser'], 'events': ['detect']},
         0x44: {'name': 'iBS08PIR', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['pir']},
         0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']},
     }
