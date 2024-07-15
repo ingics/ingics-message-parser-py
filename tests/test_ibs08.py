@@ -20,34 +20,42 @@ def test_ibs08t():
     assert msd.humidity == 52.3
     assert msd.user == 0
 
-def test_ibs08r():
+def test_ibs09r():
     payload = '02010612FF2C0883BC280100AAAA7200000042090000'
     msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08R'
+    assert msd.type == 'iBS09R'
     assert msd.battery == 2.96
     assert msd.range == 114
     assert msd.user == 0
 
-def test_ibs08ps():
+def test_ibs09ps():
     payload = '02010612FF2C0883BC1E012021071E00000043010100'
     msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08PS'
+    assert msd.type == 'iBS09PS'
     assert msd.battery == 2.86
     assert msd.value == 1825
     assert msd.counter == 30
     assert msd.user == 0
     payload = '02010612FF2C0883BC170100B2FF1800000043010100'
     msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08PS'
+    assert msd.type == 'iBS09PS'
     assert msd.battery == 2.79
     assert msd.value == -78
     assert msd.counter == 24
     assert msd.user == 0
 
-def test_ibs08pir():
+def test_ibs09pir():
     payload = '02010612FF2C0883BC4A0110AAAAFFFF000044040000'
     msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08PIR'
+    assert msd.type == 'iBS09PIR'
     assert msd.battery == 3.3
     assert msd.events.pir == True
+    assert msd.user == 0
+
+def test_ibs09lx():
+    payload = '02010612FF2C0883BC280100AAAA7200000045090000'
+    msd = PayloadParser.parse(payload).manufacturerData
+    assert msd.type == 'iBS09LX'
+    assert msd.battery == 2.96
+    assert msd.lux == 114
     assert msd.user == 0
