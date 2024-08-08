@@ -130,6 +130,18 @@ class Msd:
     bitDin2 = 3 # same bit as fall, for iBS03QY only
     bitDetect = 5 # same bit as IR, for iBS08 only
 
+    eventMapping = {
+        'button': bitButton,
+        'moving': bitMoving,
+        'hall': bitHall,
+        'fall': bitFall,
+        'pir': bitPIR,
+        'ir': bitIR,
+        'din': bitDin,
+        'din2': bitDin2,
+        'detect': bitDetect
+    }
+
     def fieldDummy(self, idx):
         return 2
 
@@ -266,20 +278,17 @@ class Msd:
         0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']},
     }
 
+    ibs07Features = {
+        0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
+        0x41: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']},
+        0x42: {'name': 'iBS09R', 'fields': ['fieldDummy', 'fieldRange'], 'events': ['button']},
+        0x43: {'name': 'iBS09PS', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['detect']},
+        0x44: {'name': 'iBS09PIR', 'fields': [], 'events': ['pir']},
+        0x45: {'name': 'iBS09LX', 'fields': ['fieldDummy', 'fieldDummy', 'fieldLux'], 'events': ['button']},
+        0x50: {'name': 'iBS07', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldLux', 'fieldAccel'], 'events': ['button']}
+    }
+
     def ingics_ibs(self, features):
-
-        eventMapping = {
-            'button': self.bitButton,
-            'moving': self.bitMoving,
-            'hall': self.bitHall,
-            'fall': self.bitFall,
-            'pir': self.bitPIR,
-            'ir': self.bitIR,
-            'din': self.bitDin,
-            'din2': self.bitDin2,
-            'detect': self.bitDetect
-        }
-
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
         extraFlag = struct.unpack('B', bytes(self.raw[14:15]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
@@ -297,7 +306,7 @@ class Msd:
             for field in feature['fields']:
                 idx += getattr(self, field)(idx)
             for event in feature['events']:
-                bitNo = eventMapping.get(event)
+                bitNo = self.eventMapping.get(event)
                 if bitNo is not None:
                     self.events[event] = (eventFlag & (1 << bitNo) != 0)
         else:
@@ -306,29 +315,37 @@ class Msd:
         self.events['boot'] = ((extraFlag & 0x10) != 0)
         self.events = MsdEvents(self.events)
 
-    def ingics_ibs07(self):
+    def ingics_ibsBC87(self):
+        subtype = struct.unpack('B', bytes(self.raw[19:20]))[0]
+        extraFlag = struct.unpack('B', bytes(self.raw[21:22]))[0]
+        eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
+
         self.company = 'Ingics'
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
         self.battery = struct.unpack('H', bytes(self.raw[4:6]))[0] / 100
-
-        subtype = struct.unpack('B', bytes(self.raw[19:20]))[0]
-        if subtype == 0x50:
-            self.type = 'iBS07'
-            self.fieldTemp(7)
-            if hasattr(self, 'temperature'):
-                self.fieldHumidity(9)
-                self.fieldLux(11)
-            self.fieldAccel(13)
-        elif subtype == 0x39:
-            self.type = 'iWS01'
-            self.fieldTemp(7)
-            self.fieldHumidity1D(9)
-
-        extraFlag = struct.unpack('B', bytes(self.raw[20:21]))[0]
-        eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
-        self.eventFlag = eventFlag
         self.events = {}
-        self.events['button'] = ((eventFlag & (1 << self.bitButton)) != 0)
+        self.eventFlag = eventFlag
+
+        feature = self.ibs07Features.get(subtype)
+        if feature is not None:
+            self.type = feature['name']
+            idx = 7
+            for field in feature['fields']:
+                idx += getattr(self, field)(idx)
+            for event in feature['events']:
+                bitNo = self.eventMapping.get(event)
+                if bitNo is not None:
+                    self.events[event] = (eventFlag & (1 << bitNo) != 0)
+
+            if subtype == 0x50:
+                if not hasattr(self, 'temperature'):
+                    if hasattr(self, 'humidity'):
+                        del self.humidity
+                    if hasattr(self, 'lux'):
+                        del self.lux
+        else:
+            self.type = 'Unknown Tag'
+        
         self.events['boot'] = ((extraFlag & 0x10) != 0)
         self.events = MsdEvents(self.events)
 
@@ -437,5 +454,5 @@ class Msd:
                 # iBS05/iBS06
                 self.ingics_ibs(self.ibsFeatures)
             elif self.mfg == 0x082C and code == 0xBC87:
-                # iBS07
-                self.ingics_ibs07()
+                # iBS07/iBS08/iBS09
+                self.ingics_ibsBC87()
