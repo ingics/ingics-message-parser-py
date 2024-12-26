@@ -270,22 +270,22 @@ class Msd:
         0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
         0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
         0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
-        0x41: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldUser'], 'events': ['button']},
-        0x42: {'name': 'iBS09R', 'fields': ['fieldDummy', 'fieldRange', 'fieldUser'], 'events': ['button']},
-        0x43: {'name': 'iBS09PS', 'fields': ['fieldValue', 'fieldCounter', 'fieldUser'], 'events': ['detect']},
-        0x44: {'name': 'iBS09PIR', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['pir']},
-        0x45: {'name': 'iBS09LX', 'fields': ['fieldDummy', 'fieldLux', 'fieldUser'], 'events': ['button']},
-        0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']},
+        0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']}, # deprecated, for backward compatibility
     }
 
-    ibs07Features = {
+    # iBS07 only
+    ibsBC87Features = {
         0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
+        0x50: {'name': 'iBS07', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldLux', 'fieldAccel'], 'events': ['button']}
+    }
+
+    # iBS08/iBS09, support 7 fields at max
+    ibsBC88Features = {
         0x41: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']},
         0x42: {'name': 'iBS09R', 'fields': ['fieldDummy', 'fieldRange'], 'events': ['button']},
         0x43: {'name': 'iBS09PS', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['detect']},
         0x44: {'name': 'iBS09PIR', 'fields': [], 'events': ['pir']},
-        0x45: {'name': 'iBS09LX', 'fields': ['fieldDummy', 'fieldDummy', 'fieldLux'], 'events': ['button']},
-        0x50: {'name': 'iBS07', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldLux', 'fieldAccel'], 'events': ['button']}
+        0x45: {'name': 'iBS08TL', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldLux'], 'events': ['button']},
     }
 
     def ingics_ibs(self, features):
@@ -315,9 +315,9 @@ class Msd:
         self.events['boot'] = ((extraFlag & 0x10) != 0)
         self.events = MsdEvents(self.events)
 
-    def ingics_ibsBC87(self):
-        subtype = struct.unpack('B', bytes(self.raw[19:20]))[0]
-        extraFlag = struct.unpack('B', bytes(self.raw[21:22]))[0]
+    def ingics_ibsBC87(self, subtypeIdx, features):
+        subtype = struct.unpack('B', bytes(self.raw[subtypeIdx:subtypeIdx+1]))[0]
+        extraFlag = struct.unpack('B', bytes(self.raw[subtypeIdx+2:subtypeIdx+3]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
 
         self.company = 'Ingics'
@@ -326,7 +326,7 @@ class Msd:
         self.events = {}
         self.eventFlag = eventFlag
 
-        feature = self.ibs07Features.get(subtype)
+        feature = features.get(subtype)
         if feature is not None:
             self.type = feature['name']
             idx = 7
@@ -454,5 +454,8 @@ class Msd:
                 # iBS05/iBS06
                 self.ingics_ibs(self.ibsFeatures)
             elif self.mfg == 0x082C and code == 0xBC87:
-                # iBS07/iBS08/iBS09
-                self.ingics_ibsBC87()
+                # iBS07
+                self.ingics_ibsBC87(19, self.ibsBC87Features)
+            elif self.mfg == 0x082C and code == 0xBC88:
+                # iBS08/iBS09
+                self.ingics_ibsBC87(21, self.ibsBC88Features)
