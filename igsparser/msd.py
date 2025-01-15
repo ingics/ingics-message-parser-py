@@ -267,7 +267,7 @@ class Msd:
         0x33: {'name': 'iBS05G', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'moving']},
         0x34: {'name': 'iBS05CO2', 'fields': ['fieldDummy', 'fieldCo2', 'fieldUser'], 'events': ['button']},
         0x35: {'name': 'iBS05i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
-        0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
         0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
         0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
         0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']}, # deprecated, for backward compatibility

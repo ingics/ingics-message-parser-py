@@ -10,6 +10,7 @@ def test_ibs06():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS06'
         assert msd.battery == 3.3
+        assert hasattr(msd.events, 'button') is False
     MessageParser.parse(message, handler)
 
 def test_ibs06i():
@@ -19,4 +20,5 @@ def test_ibs06i():
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS06i'
         assert msd.battery == 3.09
+        assert hasattr(msd.events, 'button') is False
     MessageParser.parse(message, handler)
