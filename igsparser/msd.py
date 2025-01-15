@@ -230,11 +230,11 @@ class Msd:
         return 18
 
     ibs01Features = {
-        0x03: {'name': 'iBS01', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
-        0x04: {'name': 'iBS01H', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['hall']},
-        0x05: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldUser'], 'events': []},
-        0x06: {'name': 'iBS01G', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['moving', 'fall']},
-        0x07: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': []}
+        0x03: {'name': 'iBS01', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
+        0x04: {'name': 'iBS01H', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'hall']},
+        0x05: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldUser'], 'events': ['button']},
+        0x06: {'name': 'iBS01G', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'moving', 'fall']},
+        0x07: {'name': 'iBS01T', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['button']}
     }
 
     ibsFeatures = {

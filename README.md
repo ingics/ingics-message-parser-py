@@ -21,6 +21,7 @@ pip install .
 pip install .
 pip install pytest
 pytest -v
+pytest -k <test key word>
 ```
 
 ### Bluepy
