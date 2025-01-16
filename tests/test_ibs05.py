@@ -1,3 +1,4 @@
+import json
 from igsparser import MessageParser
 
 
@@ -10,6 +11,29 @@ def test_ibs05():
         assert msd.events.button is True
     MessageParser.parse(message, handler)
 
+def test_ibs05h():
+    messages = { 'data': [
+            '$GPRP,FDB69134E063,F008D1789200,-75,02010612FF2C0883BC2D0100AAAA04000000310A1000',
+            '$GPRP,FDB69134E063,F008D1789200,-75,02010612FF2C0883BC2D0101AAAA04000000310A1000',
+            '$GPRP,FDB69134E063,F008D1789200,-75,02010612FF2C0883BC2D0104AAAA01800000310A1000',
+    ]};
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS05H'
+        assert msd.battery == 3.01
+        if index == 0:
+            assert msd.counter == 4
+            assert msd.events.button is False
+            assert msd.events.hall is False
+        elif index == 1:
+            assert msd.counter == 4
+            assert msd.events.button is True
+            assert msd.events.hall is False
+        elif index == 2:
+            assert msd.counter == 32769
+            assert msd.events.button is False
+            assert msd.events.hall is True
+    MessageParser.parse(json.dumps(messages), handler)
 
 def test_ibs05t():
     message = '$GPRP,EAC653D3AA8D,CCB97E7361A4,-44,02010612FF2C0883BC4A0100A10AFFFF000032000000'
