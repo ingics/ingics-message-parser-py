@@ -121,3 +121,4 @@ def test_ibs01g():
             assert msd.events.button is False
             assert msd.events.moving is False
             assert msd.events.fall is True
+    MessageParser.parse(json.dumps(messages), handler)
