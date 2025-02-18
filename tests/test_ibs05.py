@@ -56,6 +56,25 @@ def test_ibs05g():
     MessageParser.parse(message, handler)
 
 
+def test_ibs05g_flip():
+    messages = { 'data': [
+            '$GPRP,FD40E805B277,F008D1789200,-62,02010612FF2C0883BC3C012002FF000000003A0A1000',
+            '$GPRP,FDB69134E063,F008D1789200,-75,02010612FF2C0883BC3A0101F200000000003A0A1000',
+    ]}
+    def handler(data, index):
+        msd = data.advertisement.manufacturerData
+        assert msd.type == 'iBS05G-Flip'        
+        if index == 0:
+            assert msd.battery == 3.16
+            assert msd.events.button is False
+            assert msd.events.flip is True
+        elif index == 1:
+            assert msd.battery == 3.14
+            assert msd.events.button is True
+            assert msd.events.flip is False
+    MessageParser.parse(json.dumps(messages), handler)
+
+
 def test_ibs05co2():
     message = '$GPRP,C8B629D6DAC3,F008D1789294,-35,02010612FF2C0883BC270100AAAA6804000034010000'
 

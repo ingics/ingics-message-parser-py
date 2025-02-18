@@ -129,6 +129,7 @@ class Msd:
     bitDin = 6
     bitDin2 = 3 # same bit as fall, for iBS03QY only
     bitDetect = 5 # same bit as IR, for iBS08 only
+    bitFlip = 5 # same bit as IR, for iBS05G-Flip only
 
     eventMapping = {
         'button': bitButton,
@@ -139,7 +140,8 @@ class Msd:
         'ir': bitIR,
         'din': bitDin,
         'din2': bitDin2,
-        'detect': bitDetect
+        'detect': bitDetect,
+        'flip': bitFlip
     }
 
     def fieldDummy(self, idx):
@@ -269,6 +271,7 @@ class Msd:
         0x35: {'name': 'iBS05i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
         0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
         0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
+        0x3A: {'name': 'iBS05G-Flip', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'flip']},
         0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
         0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']}, # deprecated, for backward compatibility
     }
