@@ -19,7 +19,6 @@ def test_ibs03g():
     msd = adv.manufacturerData
     assert msd.type == 'iBS03G'
     assert msd.events.moving is True
-    assert msd.events.boot is True
 
 
 def test_ibs03t_rh():

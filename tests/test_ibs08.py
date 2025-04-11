@@ -1,38 +1,18 @@
 from igsparser import MessageParser, PayloadParser
 
-def test_ibs08():
-    message = '$GPRP,F83060BC466E,98F4AB891854,-82,02010612FF2C0883BC380120C0086608000048080400'
-
-    def handler(data, index):
-        msd = data.advertisement.manufacturerData
-        assert msd.type == 'iBS08'
-        assert msd.temperature == 21.5
-        assert msd.temperatureEnv == 22.4
-        assert msd.events.detect == True
-    MessageParser.parse(message, handler)
-
-def test_ibs08t():
-    payload = '0201061AFF2C0888BC2C01000B0BA3010000000000000000000041000000'
-    msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08T'
-    assert msd.battery == 3
-    assert msd.temperature == 28.27
-    assert msd.humidity == 41.9
-    assert msd.events.button == False
-    payload = '0201061AFF2C0888BCE600016E2813000000000000000000000041000000'
-    msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08T'
-    assert msd.battery == 2.3
-    assert msd.temperature == 103.5
-    assert msd.humidity == 1.9
-    assert msd.events.button == True
-
 def test_ibs09r():
     payload = '0201061AFF2C0888BC470100AAAA74000000000000000000000042100000'
     msd = PayloadParser.parse(payload).manufacturerData
     assert msd.type == 'iBS09R'
     assert msd.battery == 3.27
     assert msd.range == 116
+    assert msd.events.detect == False
+    payload = '0201061AFF2C0888BC470120AAAA74000000000000000000000042100000'
+    msd = PayloadParser.parse(payload).manufacturerData
+    assert msd.type == 'iBS09R'
+    assert msd.battery == 3.27
+    assert msd.range == 116
+    assert msd.events.detect == True
 
 def test_ibs09ps():
     payload = '0201061AFF2C0888BC470120AAAA01000000000000000000000043100000'
@@ -60,10 +40,10 @@ def test_ibs09pir():
     assert msd.battery == 2.50
     assert msd.events.pir == False
 
-def test_ibs08tl():
+def test_ibs08t():
     payload = '0201061AFF2C0888BC4701010B0BA3010102000000000000000045100000'
     msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08TL'
+    assert msd.type == 'iBS08T'
     assert msd.battery == 3.27
     assert msd.temperature == 28.27
     assert msd.humidity == 41.9
@@ -71,7 +51,7 @@ def test_ibs08tl():
     assert msd.events.button == True
     payload = '0201061AFF2C0888BC2001006E281300B907000000000000000045100000'
     msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08TL'
+    assert msd.type == 'iBS08T'
     assert msd.battery == 2.88
     assert msd.temperature == 103.5
     assert msd.humidity == 1.9
@@ -79,10 +59,9 @@ def test_ibs08tl():
     assert msd.events.button == False
     payload = '0201061AFF2C0888BC330100870DF5019982000000000000000045020900'
     msd = PayloadParser.parse(payload).manufacturerData
-    assert msd.type == 'iBS08TL'
+    assert msd.type == 'iBS08T'
     assert msd.battery == 3.07
     assert msd.temperature == 34.63
     assert msd.humidity == 50.1
     assert msd.lux == 33433
     assert msd.events.button == False
-

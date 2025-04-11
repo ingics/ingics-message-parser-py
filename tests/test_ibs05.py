@@ -94,7 +94,6 @@ def test_ibs05rg():
         assert msd.type == 'iBS05RG'
         assert msd.battery == 3.18
         assert msd.events.moving is True
-        assert msd.events.boot is True
         assert msd.accels[0].x == 10
         assert msd.accels[1].y == -10
         assert msd.accels[2].z == -248

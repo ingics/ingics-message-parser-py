@@ -270,30 +270,25 @@ class Msd:
         0x34: {'name': 'iBS05CO2', 'fields': ['fieldDummy', 'fieldCo2', 'fieldUser'], 'events': ['button']},
         0x35: {'name': 'iBS05i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button']},
         0x36: {'name': 'iBS06i', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
-        0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
         0x3A: {'name': 'iBS05G-Flip', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': ['button', 'flip']},
         0x40: {'name': 'iBS06', 'fields': ['fieldDummy', 'fieldDummy', 'fieldUser'], 'events': []},
-        0x48: {'name': 'iBS08', 'fields': ['fieldTempEnv', 'fieldTemp', 'fieldUser'], 'events': ['detect']}, # deprecated, for backward compatibility
     }
 
     # iBS07 only
     ibsBC87Features = {
-        0x39: {'name': 'iWS01', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']}, # deprecated, for backward compatibility
         0x50: {'name': 'iBS07', 'fields': ['fieldTemp', 'fieldHumidity', 'fieldLux', 'fieldAccel'], 'events': ['button']}
     }
 
     # iBS08/iBS09, support 7 fields at max
     ibsBC88Features = {
-        0x41: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D'], 'events': ['button']},
-        0x42: {'name': 'iBS09R', 'fields': ['fieldDummy', 'fieldRange'], 'events': ['button']},
+        0x42: {'name': 'iBS09R', 'fields': ['fieldDummy', 'fieldRange'], 'events': ['button', 'detect']},
         0x43: {'name': 'iBS09PS', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['detect']},
         0x44: {'name': 'iBS09PIR', 'fields': [], 'events': ['pir']},
-        0x45: {'name': 'iBS08TL', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldLux'], 'events': ['button']},
+        0x45: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldLux'], 'events': ['button']},
     }
 
     def ingics_ibs(self, features):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
-        extraFlag = struct.unpack('B', bytes(self.raw[14:15]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
 
         self.company = 'Ingics'
@@ -315,12 +310,10 @@ class Msd:
         else:
             self.type = 'Unknown Tag'
 
-        self.events['boot'] = ((extraFlag & 0x10) != 0)
         self.events = MsdEvents(self.events)
 
     def ingics_ibsBC87(self, subtypeIdx, features):
         subtype = struct.unpack('B', bytes(self.raw[subtypeIdx:subtypeIdx+1]))[0]
-        extraFlag = struct.unpack('B', bytes(self.raw[subtypeIdx+2:subtypeIdx+3]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
 
         self.company = 'Ingics'
@@ -349,7 +342,6 @@ class Msd:
         else:
             self.type = 'Unknown Tag'
         
-        self.events['boot'] = ((extraFlag & 0x10) != 0)
         self.events = MsdEvents(self.events)
 
     @staticmethod
@@ -366,17 +358,13 @@ class Msd:
     def ingics_rs(self):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
         eventFlag = struct.unpack('B', bytes(self.raw[6:7]))[0]
-        extraFlag = struct.unpack('B', bytes(self.raw[14:15]))[0]
         self.company = 'Ingics'
         self.code = struct.unpack('H', bytes(self.raw[2:4]))[0]
         self.type = self.ingics_rs_type(subtype)
         self.battery = struct.unpack('<H', bytes(self.raw[4:6]))[0] / 100
         self.user = struct.unpack('<H', bytes(self.raw[11:13]))[0]
         self.eventFlag = eventFlag
-        self.events = MsdEvents({
-            'sensor': (eventFlag & 0x04) != 0x00,
-            'boot': (extraFlag & 0x10) != 0x00
-        })
+        self.events = MsdEvents({ 'sensor': (eventFlag & 0x04) != 0x00 })
 
     def ingics_rg(self):
         self.company = 'Ingics'
@@ -405,10 +393,6 @@ class Msd:
         self.fieldAccels(6)
         if self.type == 'iBS03GP':
             self.gp = struct.unpack('<H', bytes(self.raw[24:26]))[0] / 50
-        if self.type == 'iBS05RG':
-            extraFlag = struct.unpack('B', bytes(self.raw[24:25]))[0]
-            self.events.boot = ((extraFlag & 0x10) != 0)
-
 
     def ingics_ibs01(self):
         subtype = struct.unpack('B', bytes(self.raw[13:14]))[0]
