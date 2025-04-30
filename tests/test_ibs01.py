@@ -45,11 +45,12 @@ def test_old_ibs01_json_temperature():
 
 
 def test_ibs01t():
-    messages = { 'data': [
+    messages = {'data': [
         '$GPRP,C874A59968B3,F008D1789208,-59,02010612FF590080BC2E0100BF0A3900000005000000',
         '$GPRP,FB45C77FD45B,F008D1789200,-29,02010612FF590080BC1801017FF84300000005000000',
         '$GPRP,FB45C77FD45B,F008D1789200,-30,02010612FF590080BC1A01001027FFFF000007000000'
     ]}
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS01T'
@@ -67,15 +68,17 @@ def test_ibs01t():
             assert hasattr(msd, 'humidity') is False
             assert msd.temperature == 100.0
             assert msd.events.button is False
-    MessageParser.parse(json.dumps(messages), handler)    
+    MessageParser.parse(json.dumps(messages), handler)
+
 
 def test_ibs01h():
-    messages = { 'data': [
+    messages = {'data': [
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC160100FFFF0000000004030000',
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC160101FFFF0000000004030000',
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC160104FFFF0000000004030000',
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC160105FFFF0000000004030000',
     ]}
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS01H'
@@ -92,15 +95,17 @@ def test_ibs01h():
         elif index == 3:
             assert msd.events.button is True
             assert msd.events.hall is True
-    MessageParser.parse(json.dumps(messages), handler)    
+    MessageParser.parse(json.dumps(messages), handler)
+
 
 def test_ibs01g():
-    messages = { 'data': [
+    messages = {'data': [
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC3A0100FFFF0000000006030000',
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC3A0101FFFF0000000006030000',
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC3A0102FFFF0000000006030000',
         '$GPRP,E856715A54F5,F008D1789200,-60,02010612FF590080BC3A0108FFFF0000000006030000',
     ]}
+
     def handler(data, index):
         msd = data.advertisement.manufacturerData
         assert msd.type == 'iBS01G'

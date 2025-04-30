@@ -127,9 +127,9 @@ class Msd:
     bitPIR = 4
     bitIR = 5
     bitDin = 6
-    bitDin2 = 3 # same bit as fall, for iBS03QY only
-    bitDetect = 5 # same bit as IR, for iBS08 only
-    bitFlip = 5 # same bit as IR, for iBS05G-Flip only
+    bitDin2 = 3    # same bit as fall, for iBS03QY only
+    bitDetect = 5  # same bit as IR, for iBS08 only
+    bitFlip = 5    # same bit as IR, for iBS05G-Flip only
 
     eventMapping = {
         'button': bitButton,
@@ -187,7 +187,7 @@ class Msd:
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
             self.voltage = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
-    
+
     def fieldCurrent(self, idx):
         # current sned as unsigned int in µA
         if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
@@ -259,7 +259,7 @@ class Msd:
         0x20: {'name': 'iRS02', 'fields': ['fieldTemp', 'fieldDummy', 'fieldUser'], 'events': ['hall']},
         0x21: {'name': 'iRS02TP', 'fields': ['fieldTemp', 'fieldTempExt', 'fieldUser'], 'events': ['hall']},
         0x22: {'name': 'iRS02RG', 'fields': ['fieldAccel'], 'events': ['hall']},
-        0x23: {'name': 'iBS03AD-NTC', 'fields': ['fieldDummy', 'fieldTempExt', 'fieldUser'], 'events': []},        
+        0x23: {'name': 'iBS03AD-NTC', 'fields': ['fieldDummy', 'fieldTempExt', 'fieldUser'], 'events': []},
         0x24: {'name': 'iBS03AD-V', 'fields': ['fieldDummy', 'fieldVoltage', 'fieldUser'], 'events': []},
         0x25: {'name': 'iBS03AD-D', 'fields': ['fieldDummy', 'fieldCounter', 'fieldUser'], 'events': ['din']},
         0x26: {'name': 'iBS03AD-A', 'fields': ['fieldDummy', 'fieldCurrent', 'fieldUser'], 'events': []},
@@ -341,7 +341,7 @@ class Msd:
                         del self.lux
         else:
             self.type = 'Unknown Tag'
-        
+
         self.events = MsdEvents(self.events)
 
     @staticmethod
@@ -364,7 +364,7 @@ class Msd:
         self.battery = struct.unpack('<H', bytes(self.raw[4:6]))[0] / 100
         self.user = struct.unpack('<H', bytes(self.raw[11:13]))[0]
         self.eventFlag = eventFlag
-        self.events = MsdEvents({ 'sensor': (eventFlag & 0x04) != 0x00 })
+        self.events = MsdEvents({'sensor': (eventFlag & 0x04) != 0x00})
 
     def ingics_rg(self):
         self.company = 'Ingics'

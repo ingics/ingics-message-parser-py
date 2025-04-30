@@ -13,6 +13,7 @@ def test_ibs06():
         assert hasattr(msd.events, 'button') is False
     MessageParser.parse(message, handler)
 
+
 def test_ibs06i():
     message = '$RSPR,EB8C79A8F138,F008D1789200,-89,12FF2C0883BC350100AAAAFFFF000036030000,1639557006.811'
 
