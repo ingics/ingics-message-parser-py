@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools >= 64", "setuptools-scm >= 8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ingics_message_parser"
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[tool.setuptools_scm]
+
+[tool.setuptools]
+packages = ["igsparser"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {optional = {file = ["optional_requirements.txt"]}}
+
