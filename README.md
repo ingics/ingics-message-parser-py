@@ -7,18 +7,30 @@ Message parser for Ingics BLE beacon and gateway.
 
 ### Install
 
-From github
+Always suggest use virtual env
 ```
-pip install -U git+https://github.com/ingics/ingics-message-parser-py
+python -m venv .venv
+. .venv/bin/active
 ```
+
 From local clone
 ```
 pip install .
 ```
 
+For developement
+```
+pip install . --editable
+```
+
+From github
+```
+pip install -U git+https://github.com/ingics/ingics-message-parser-py
+```
+
 ### Run Unit Test
 ```
-pip install .
+pip install . --editable
 pip install pytest
 pytest -v
 pytest -k <test key word>
@@ -107,8 +119,3 @@ def cb(data, index):
 
  MessageParser.parse('$GPRP,A8F9F2190E7A,A99213AA86EF,-77,02010612FF0D0083BCD60000FFFFFFFFFFFF15000000', cb)
 ```
-
-#### For Python 2.7.5
-
-The package has been test on Python 2.7.17.
-But I cannot guarantee it casue the support officially stopped January 1 2020.
