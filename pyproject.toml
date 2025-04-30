@@ -5,6 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ingics_message_parser"
 dynamic = ["version", "dependencies", "optional-dependencies"]
+license = { file = "LICENSE" }
+authors = [
+    { name = "Tim Chao" },
+    { name = "Tim Chao", email = "tim.chao@ingics.com" },
+]
+description = "Parser library for Ingics iBS0X tag BLE ADV payload"
+
+[project.urls]
+Homepage = "https://www.ingics.com"
 
 [tool.setuptools_scm]
 
@@ -14,4 +23,3 @@ packages = ["igsparser"]
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies = {optional = {file = ["optional_requirements.txt"]}}
-

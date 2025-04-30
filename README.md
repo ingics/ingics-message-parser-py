@@ -30,16 +30,26 @@ pip install -U git+https://github.com/ingics/ingics-message-parser-py
 
 ### Run Unit Test
 ```
-pip install . --editable
 pip install pytest
 pytest -v
+```
+
+Choice test items by keywork
+```
 pytest -k <test key word>
 ```
+
+Choice test items by file
+```
+pytest tests/<test file name>
+```
+
 
 ### Bluepy
 
 There is an example code for scanning iBS03T device in example folder.
 The code has been tested on RPI3B+.
+
 
 ### Shell tools
 

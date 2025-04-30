@@ -1,3 +1,4 @@
+import context
 from igsparser import MessageParser, PayloadParser
 
 
