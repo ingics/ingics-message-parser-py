@@ -285,6 +285,7 @@ class Msd:
         0x43: {'name': 'iBS09PS', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['detect']},
         0x44: {'name': 'iBS09PIR', 'fields': [], 'events': ['pir']},
         0x45: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldLux'], 'events': ['button']},
+        0x47: {'name': 'iBS09IR', 'fields': ['fieldDummy', 'fieldCounter', 'fieldDummy', 'fieldValue'], 'events': ['button', 'ir']},
     }
 
     def ingics_ibs(self, features):

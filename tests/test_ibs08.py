@@ -45,6 +45,23 @@ def test_ibs09pir():
     assert msd.events.pir is False
 
 
+def test_ibs09ir():
+    payload = '0201061AFF2C0888BC390120AAAAD1000000060000000000000047080000'
+    msd = PayloadParser.parse(payload).manufacturerData
+    assert msd.type == 'iBS09IR'
+    assert msd.battery == 3.13
+    assert msd.counter == 209
+    assert msd.events.ir is True
+    assert msd.events.button is False
+    payload = '0201061AFF2C0888BC390101AAAAD0000000040000000000000047080000'
+    msd = PayloadParser.parse(payload).manufacturerData
+    assert msd.type == 'iBS09IR'
+    assert msd.battery == 3.13
+    assert msd.counter == 208
+    assert msd.events.ir is False
+    assert msd.events.button is True
+
+
 def test_ibs08t():
     payload = '0201061AFF2C0888BC4701010B0BA3010102000000000000000045100000'
     msd = PayloadParser.parse(payload).manufacturerData
