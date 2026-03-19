@@ -204,6 +204,11 @@ class Msd:
             self.lux = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0]
         return 2
 
+    def fieldPressure(self, idx):
+        if self.raw[idx] != 0xFF or self.raw[idx+1] != 0xFF:
+            self.pressure = struct.unpack('<H', bytes(self.raw[idx:idx+2]))[0] / 10
+        return 2
+
     def fieldUser(self, idx):
         self.user = struct.unpack('<h', bytes(self.raw[idx:idx+2]))[0]
         return 2
@@ -286,6 +291,16 @@ class Msd:
         0x44: {'name': 'iBS09PIR', 'fields': [], 'events': ['pir']},
         0x45: {'name': 'iBS08T', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldLux'], 'events': ['button']},
         0x47: {'name': 'iBS09IR', 'fields': ['fieldDummy', 'fieldCounter', 'fieldDummy', 'fieldValue'], 'events': ['button', 'ir']},
+        0x49: {'name': 'iBS08TP', 'fields': ['fieldTemp', 'fieldTempExt'], 'events': ['button']},
+        0x4A: {'name': 'iBS08AD-NTC', 'fields': ['fieldDummy', 'fieldTempExt'], 'events': ['button']},
+        0x4B: {'name': 'iBS08P', 'fields': ['fieldTemp', 'fieldTempExt'], 'events': ['button']},
+        0x4D: {'name': 'iBS08F', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['button', 'fall', 'din']},
+        0x4E: {'name': 'iBS08Q', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['button', 'din']},
+        0x4F: {'name': 'iBS08B', 'fields': ['fieldTemp', 'fieldHumidity1D', 'fieldPressure'], 'events': ['button']},
+        0x51: {'name': 'iBS08AD-V', 'fields': ['fieldDummy', 'fieldVoltage'], 'events': ['button']},
+        0x52: {'name': 'iBS08AD-D', 'fields': ['fieldDummy', 'fieldCounter'], 'events': ['button', 'din']},
+        0x53: {'name': 'iBS08AD-A', 'fields': ['fieldDummy', 'fieldCurrent'], 'events': ['button']},
+        0x54: {'name': 'iBS09', 'fields': [], 'events': ['button']},
     }
 
     def ingics_ibs(self, features):
@@ -340,6 +355,9 @@ class Msd:
                         del self.humidity
                     if hasattr(self, 'lux'):
                         del self.lux
+            if subtypeIdx == 21:
+                # BC88 extended payload: UserData at fixed offset 19
+                self.fieldUser(19)
         else:
             self.type = 'Unknown Tag'
 
